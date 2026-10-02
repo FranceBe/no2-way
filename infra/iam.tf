@@ -22,8 +22,13 @@ resource "aws_iam_role_policy" "dynamo" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect   = "Allow"
-      Action   = ["dynamodb:PutItem", "dynamodb:BatchWriteItem", "dynamodb:Query"]
+      Effect = "Allow"
+      Action = [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:Query",
+      ]
       Resource = aws_dynamodb_table.readings.arn
     }]
   })

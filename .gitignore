@@ -6,3 +6,9 @@ dist/
 infra/build/
 .DS_Store
 private-doc.md
+# Terraform variables (contain secrets)
+*.tfvars
+# Saved Terraform plans
+tfplan
+# Lambda invoke outputs
+out.json
