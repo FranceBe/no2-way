@@ -7,7 +7,7 @@ import "./index.css";
 async function enableMocking() {
   if (import.meta.env.VITE_USE_MOCKS !== "true") return;
   const { worker } = await import("./mocks/browser");
-  await worker.start({ onUnhandledRequest: "bypass" });
+  await worker.start();
 }
 
 enableMocking().then(() => {
