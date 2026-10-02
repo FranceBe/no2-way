@@ -150,28 +150,34 @@ export async function getBikes(q: Query) {
     .sort((a, b) => a.distance - b.distance)
     .slice(0, 20);
 }
+
 // ---------- Timetable (first and last trains) ----------
 
-interface TflJourneyTime {
-  hour: string | number;
-  minute: string | number;
+interface TflKnownJourney {
+  hour: string;
+  minute: string;
 }
 
 interface TflSchedule {
-  name: string; // e.g. "Monday - Friday"
-  firstJourney?: TflJourneyTime;
-  lastJourney?: TflJourneyTime;
+  name: string; // e.g. "Saturday (also Good Friday)"
+  knownJourneys?: TflKnownJourney[];
 }
 
 interface TflTimetableResponse {
   timetable?: { routes?: { schedules?: TflSchedule[] }[] };
 }
 
-// TfL may use hours past 24 for trains after midnight ("24:31")
-const toHHMM = (time: TflJourneyTime | undefined): string | null => {
-  if (!time) return null;
-  const hour = String(Number(time.hour) % 24).padStart(2, "0");
-  const minute = String(Number(time.minute)).padStart(2, "0");
+// Trains before 04:00 belong to the previous day's service (e.g. 00:31 is a "last train")
+const SERVICE_DAY_START = 4 * 60;
+
+const toServiceMinutes = (journey: TflKnownJourney): number => {
+  const minutes = Number(journey.hour) * 60 + Number(journey.minute);
+  return minutes < SERVICE_DAY_START ? minutes + 24 * 60 : minutes;
+};
+
+const toHHMM = (minutes: number): string => {
+  const hour = String(Math.floor(minutes / 60) % 24).padStart(2, "0");
+  const minute = String(minutes % 60).padStart(2, "0");
   return `${hour}:${minute}`;
 };
 
@@ -191,20 +197,29 @@ export async function getTimetable(q: Query) {
       10_000
     );
 
-    // Several routes can share the same day names: keep the first occurrence
-    const byName = new Map<string, { name: string; first: string | null; last: string | null }>();
+    // Merge every route (branches) per day: earliest first train, latest last train
+    const byName = new Map<string, { first: number; last: number }>();
     for (const route of data.timetable?.routes ?? []) {
       for (const schedule of route.schedules ?? []) {
-        if (!byName.has(schedule.name)) {
-          byName.set(schedule.name, {
-            name: schedule.name,
-            first: toHHMM(schedule.firstJourney),
-            last: toHHMM(schedule.lastJourney),
-          });
-        }
+        const times = (schedule.knownJourneys ?? []).map(toServiceMinutes);
+        if (times.length === 0) continue;
+
+        const first = Math.min(...times);
+        const last = Math.max(...times);
+        const existing = byName.get(schedule.name);
+        byName.set(schedule.name, {
+          first: existing ? Math.min(existing.first, first) : first,
+          last: existing ? Math.max(existing.last, last) : last,
+        });
       }
     }
 
-    return { line, stop, direction, schedules: [...byName.values()] };
+    const schedules = [...byName.entries()].map(([name, { first, last }]) => ({
+      name,
+      first: toHHMM(first),
+      last: toHHMM(last),
+    }));
+
+    return { line, stop, direction, schedules };
   });
 }
