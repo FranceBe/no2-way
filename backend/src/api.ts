@@ -1,29 +1,44 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import { LOCATIONS } from "./shared/locations";
+import { UpstreamError } from "./shared/http";
+import { type Query, HttpError, json } from "./shared/response";
+import { getAir, getRoads, getLines, getLineHistory } from "./routes/history";
+import { getWeather, getLineStops, getArrivals, getBikes, getTimetable } from "./routes/live";
 
-const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+// Path -> handler. To add an endpoint: write its function, add one line here
+const routes: Record<string, (q: Query) => unknown> = {
+  "/locations": () => LOCATIONS,
+  "/weather": getWeather,
+  "/air": getAir,
+  "/roads": getRoads,
+  "/lines": getLines,
+  "/lines/history": getLineHistory,
+  "/lines/stops": getLineStops,
+  "/arrivals": getArrivals,
+  "/timetable": getTimetable,
+  "/bikes": getBikes,
+};
 
 export const handler = async (
   event: APIGatewayProxyEventV2
 ): Promise<APIGatewayProxyResultV2> => {
-  const q = event.queryStringParameters ?? {};
-  const location = q.location ?? "camden";
-  const hours = Math.min(Number(q.hours ?? 48) || 48, 24 * 30);
-  const since = new Date(Date.now() - hours * 3600e3).toISOString().slice(0, 16);
+  const route = routes[event.rawPath];
+  if (!route) return json(404, { error: "Not found" });
 
-  const { Items } = await ddb.send(
-    new QueryCommand({
-      TableName: process.env.TABLE_NAME!,
-      KeyConditionExpression: "#l = :l AND #t >= :s",
-      ExpressionAttributeNames: { "#l": "location", "#t": "ts" },
-      ExpressionAttributeValues: { ":l": location, ":s": since },
-    })
-  );
+  try {
+    return json(200, await route(event.queryStringParameters ?? {}));
+  } catch (err) {
+    // Expected errors: status and message are meant for the client
+    if (err instanceof HttpError) return json(err.status, { error: err.message });
 
-  return {
-    statusCode: 200,
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(Items ?? []),
-  };
+    // External API down: details in the logs only
+    if (err instanceof UpstreamError) {
+      console.error(err);
+      return json(502, { error: "Upstream service unavailable" });
+    }
+
+    // Anything else is a bug: never leak internal details
+    console.error(err);
+    return json(500, { error: "Internal error" });
+  }
 };

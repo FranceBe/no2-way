@@ -5,3 +5,4 @@ dist/
 *.tfstate*
 infra/build/
 .DS_Store
+private-doc.md

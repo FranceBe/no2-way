@@ -1,59 +1,44 @@
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, BatchWriteCommand } from "@aws-sdk/lib-dynamodb";
-
-const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
-const TABLE = process.env.TABLE_NAME!;
-
-interface Location {
-  id: string;
-  lat: number;
-  lon: number;
-}
-
-const LOCATIONS: Location[] = [
-  { id: "camden", lat: 51.539, lon: -0.142 },
-  { id: "westminster", lat: 51.497, lon: -0.137 },
-  { id: "hackney", lat: 51.545, lon: -0.055 },
-  { id: "greenwich", lat: 51.482, lon: 0.0 },
-  { id: "richmond", lat: 51.461, lon: -0.303 },
-];
+import { LOCATIONS } from "./shared/locations";
+import { airKey, toMinute } from "./shared/keys";
+import { fetchJson } from "./shared/http";
+import { writeAll, type Item } from "./shared/db";
 
 const VARS = ["pm2_5", "pm10", "nitrogen_dioxide", "ozone", "european_aqi"] as const;
 type Pollutant = (typeof VARS)[number];
 
-interface OpenMeteoResponse {
+interface OpenMeteoAirResponse {
+  latitude: number; // centre of the model grid cell, not the requested point
+  longitude: number;
   hourly: { time: string[] } & Record<Pollutant, (number | null)[]>;
 }
 
+// Rewrite the last hours on each run: idempotent, and fills gaps after a failed run
 const HOURS_TO_KEEP = 3;
 
-export const handler = async (): Promise<{ ok: boolean }> => {
+export const handler = async (): Promise<{ ok: boolean; count: number }> => {
   const now = Date.now();
-  const from = new Date(now - HOURS_TO_KEEP * 3600e3).toISOString().slice(0, 16);
-  const to = new Date(now).toISOString().slice(0, 16);
+  const from = toMinute(new Date(now - HOURS_TO_KEEP * 3600e3));
+  const to = toMinute(new Date(now));
+  const items: Item[] = [];
 
   for (const loc of LOCATIONS) {
     const url =
       `https://air-quality-api.open-meteo.com/v1/air-quality` +
       `?latitude=${loc.lat}&longitude=${loc.lon}&hourly=${VARS.join(",")}&past_days=1&forecast_days=1`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Open-Meteo ${res.status} pour ${loc.id}`);
-    const { hourly } = (await res.json()) as OpenMeteoResponse;
+    const { latitude, longitude, hourly } = await fetchJson<OpenMeteoAirResponse>(url);
+    const grid = `${latitude.toFixed(2)},${longitude.toFixed(2)}`;
 
-    const items = hourly.time
-      .map((ts, i) => ({
-        location: loc.id,
-        ts,
+    for (const [i, ts] of hourly.time.entries()) {
+      if (ts < from || ts > to) continue;
+      items.push({
+        pk: airKey(loc.id),
+        sk: ts,
+        grid,
         ...Object.fromEntries(VARS.map((v) => [v, hourly[v][i]])),
-      }))
-      .filter((it) => it.ts >= from && it.ts <= to);
-
-    if (items.length === 0) continue;
-    await ddb.send(
-      new BatchWriteCommand({
-        RequestItems: { [TABLE]: items.map((Item) => ({ PutRequest: { Item } })) },
-      })
-    );
+      });
+    }
   }
-  return { ok: true };
+
+  await writeAll(items);
+  return { ok: true, count: items.length };
 };
