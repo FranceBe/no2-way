@@ -1,9 +1,9 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
-import { setupServer } from "msw/node";
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import type { Weather } from "../api/types";
+import { renderWithProviders } from "../test/render";
+import { server } from "../test/server";
 import { WeatherWidget } from "./WeatherWidget";
 
 const weather: Weather = {
@@ -16,24 +16,12 @@ const weather: Weather = {
   windSpeed: 21,
 };
 
-// Default handler: the API answers with `weather` for any location
-const server = setupServer(
-  http.get("*/weather", () => HttpResponse.json(weather)),
-);
+// Default answer for any location; tests can override it with server.use()
+beforeEach(() => {
+  server.use(http.get("*/weather", () => HttpResponse.json(weather)));
+});
 
-beforeAll(() => server.listen({ onUnhandledFrame: "error" }));
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
-
-// Fresh client per test, no retries so error states show up immediately
-const renderWidget = (location?: string) => {
-  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return render(
-    <QueryClientProvider client={client}>
-      <WeatherWidget location={location} />
-    </QueryClientProvider>,
-  );
-};
+const renderWidget = (location?: string) => renderWithProviders(<WeatherWidget location={location} />);
 
 describe("WeatherWidget", () => {
   it("shows a loading state, then the weather", async () => {

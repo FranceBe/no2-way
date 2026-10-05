@@ -1,39 +1,28 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
-import { setupServer } from "msw/node";
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
+import { renderWithProviders } from "../test/render";
+import { server } from "../test/server";
 import { AirQualityWidget } from "./AirQualityWidget";
 import { FIXTURE_LOCATIONS, makeAirReadings } from "./fixtures";
 
 // Every /air request, as "location:hours"
 let airRequests: string[] = [];
 
-const server = setupServer(
-  http.get("*/locations", () => HttpResponse.json(FIXTURE_LOCATIONS)),
-  http.get("*/air", ({ request }) => {
-    const params = new URL(request.url).searchParams;
-    const hours = Number(params.get("hours"));
-    airRequests.push(`${params.get("location")}:${hours}`);
-    return HttpResponse.json(makeAirReadings({ hours }));
-  }),
-);
-
-beforeAll(() => server.listen({ onUnhandledFrame: "error" }));
-afterEach(() => {
-  server.resetHandlers();
+beforeEach(() => {
   airRequests = [];
-});
-afterAll(() => server.close());
-
-const renderWidget = () => {
-  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return render(
-    <QueryClientProvider client={client}>
-      <AirQualityWidget location="camden" hours={48} />
-    </QueryClientProvider>,
+  server.use(
+    http.get("*/locations", () => HttpResponse.json(FIXTURE_LOCATIONS)),
+    http.get("*/air", ({ request }) => {
+      const params = new URL(request.url).searchParams;
+      const hours = Number(params.get("hours"));
+      airRequests.push(`${params.get("location")}:${hours}`);
+      return HttpResponse.json(makeAirReadings({ hours }));
+    }),
   );
-};
+});
+
+const renderWidget = () => renderWithProviders(<AirQualityWidget location="camden" hours={48} />);
 
 describe("AirQualityWidget", () => {
   it("loads the last 48h of the given location", async () => {
