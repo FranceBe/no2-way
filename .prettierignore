@@ -1,0 +1,5 @@
+# Prettier covers frontend/ and shared/; the backend keeps its own style for now
+backend/
+infra/
+node_modules/
+coverage/

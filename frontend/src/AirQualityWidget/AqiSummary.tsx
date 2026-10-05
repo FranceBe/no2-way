@@ -1,4 +1,4 @@
-import type { AirReading } from '../api/types'
+import type { AirReading } from '@no2-way/shared'
 import { getAqiLevel, summarize } from './aqi'
 import { AqiBadge } from './AqiBadge'
 import { formatDateTime, parseTs } from './time'

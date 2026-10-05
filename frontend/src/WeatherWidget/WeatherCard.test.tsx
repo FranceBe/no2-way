@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import type { Weather } from '../api/types'
+import type { Weather } from '@no2-way/shared'
 import { WeatherCard, WeatherCardMessage } from './WeatherCard'
 
 const weather: Weather = {

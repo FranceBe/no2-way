@@ -1,5 +1,5 @@
 import { useId } from 'react'
-import type { AirReading } from '../api/types'
+import type { AirReading } from '@no2-way/shared'
 import { POLLUTANTS } from './aqi'
 import { AqiSummary } from './AqiSummary'
 import { AqiChart } from './charts/AqiChart'

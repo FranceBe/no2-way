@@ -13,3 +13,5 @@ tfplan
 # Lambda invoke outputs
 out.json
 .vscode
+# Test coverage reports
+coverage/

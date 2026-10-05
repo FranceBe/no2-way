@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import type { Weather } from '../api/types'
+import type { Weather } from '@no2-way/shared'
 import { WeatherCard, WeatherCardMessage } from './WeatherCard'
 
 const baseWeather: Weather = {

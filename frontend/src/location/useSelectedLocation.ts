@@ -1,6 +1,6 @@
 import { useOutletContext, useSearchParams } from 'react-router'
 import { useLocations } from '../api/queries'
-import type { Location } from '../api/types'
+import type { Location } from '@no2-way/shared'
 
 // The only place the default neighbourhood is written down
 export const DEFAULT_LOCATION_ID = 'camden'

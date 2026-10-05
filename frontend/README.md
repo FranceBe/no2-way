@@ -4,6 +4,10 @@ React + TypeScript app built with Vite. It shows London weather, air quality and
 
 Use the Node version from `../.nvmrc` (`nvm use`).
 
+The repo is an npm workspace: run `npm install` once **at the root**, which installs `shared/`, `backend/` and `frontend/` together (one lockfile, one TypeScript, one ESLint). API response types come from `@no2-way/shared` (`../shared/src/index.ts`); `apiFetch('/air')` infers its result type from the path.
+
+On `git commit`, the hook in `../.husky/pre-commit` runs lint-staged: staged files under `frontend/`, `backend/` or `shared/` go through that workspace's `lint-staged.config.js` (lint, type-check, tests with coverage thresholds, build). `npm run coverage` shows the same numbers.
+
 ## Scripts
 
 | Command             | What it does                                                               |

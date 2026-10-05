@@ -1,7 +1,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { airQuery } from '../api/queries'
-import type { Location } from '../api/types'
+import type { Location } from '@no2-way/shared'
 import { AirQualityPanel } from './AirQualityPanel'
 
 type AirQualityWidgetProps = {

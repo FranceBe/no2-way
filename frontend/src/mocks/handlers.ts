@@ -1,5 +1,12 @@
 // MSW handlers: same paths, parameters and errors as the real API
-import { http, HttpResponse, delay } from 'msw'
+import type { ApiError, ApiPath, ApiResponses } from '@no2-way/shared'
+import {
+    http,
+    HttpResponse,
+    delay,
+    type HttpResponseResolver,
+    type PathParams,
+} from 'msw'
 import {
     LINES,
     LOCATIONS,
@@ -17,21 +24,31 @@ import {
 const LINE_ID = /^[a-z0-9-]{1,40}$/
 const STOP_ID = /^[A-Za-z0-9]{1,30}$/
 
+// Handler for one API path: the response body must match the shared contract
+// (or be an error). "*/path" matches any origin, so VITE_API_URL can stay unchanged
+const apiGet = <P extends ApiPath>(
+    path: P,
+    resolver: HttpResponseResolver<
+        PathParams,
+        never,
+        ApiResponses[P] | ApiError
+    >
+) => http.get(`*${path}`, resolver)
+
 const badRequest = (error: string) =>
-    HttpResponse.json({ error }, { status: 400 })
+    HttpResponse.json<ApiError>({ error }, { status: 400 })
 
 // Same rules as the real API: 48h by default, 30 days max
 const parseHours = (raw: string | null, fallback: number): number =>
     Math.min(Number(raw ?? fallback) || fallback, 24 * 30)
 
-// "*/path" matches any origin, so VITE_API_URL can stay unchanged
 export const handlers = [
-    http.get('*/locations', async () => {
+    apiGet('/locations', async () => {
         await delay(150)
         return HttpResponse.json(LOCATIONS)
     }),
 
-    http.get('*/weather', async ({ request }) => {
+    apiGet('/weather', async ({ request }) => {
         await delay(200)
         const param = new URL(request.url).searchParams.get('location')
         const loc = param ? findLocation(param) : LOCATIONS[0]
@@ -39,7 +56,7 @@ export const handlers = [
         return HttpResponse.json(weatherFor(loc))
     }),
 
-    http.get('*/lines', async () => {
+    apiGet('/lines', async () => {
         await delay(200)
         const now = new Date()
         now.setUTCMinutes(Math.floor(now.getUTCMinutes() / 15) * 15, 0, 0)
@@ -49,7 +66,7 @@ export const handlers = [
         })
     }),
 
-    http.get('*/lines/history', async ({ request }) => {
+    apiGet('/lines/history', async ({ request }) => {
         await delay(300)
         const params = new URL(request.url).searchParams
         const line = params.get('line')
@@ -60,7 +77,7 @@ export const handlers = [
         )
     }),
 
-    http.get('*/lines/stops', async ({ request }) => {
+    apiGet('/lines/stops', async ({ request }) => {
         await delay(200)
         const line = new URL(request.url).searchParams.get('line')
         if (!line || !LINE_ID.test(line))
@@ -68,7 +85,7 @@ export const handlers = [
         return HttpResponse.json(STOPS[line] ?? [])
     }),
 
-    http.get('*/arrivals', async ({ request }) => {
+    apiGet('/arrivals', async ({ request }) => {
         await delay(250)
         const params = new URL(request.url).searchParams
         const stop = params.get('stop')
@@ -84,7 +101,7 @@ export const handlers = [
         return HttpResponse.json(arrivalsFor(stop, line, direction))
     }),
 
-    http.get('*/timetable', async ({ request }) => {
+    apiGet('/timetable', async ({ request }) => {
         await delay(300)
         const params = new URL(request.url).searchParams
         const line = params.get('line')
@@ -100,7 +117,7 @@ export const handlers = [
         return HttpResponse.json(timetableFor(line, stop, direction))
     }),
 
-    http.get('*/bikes', async ({ request }) => {
+    apiGet('/bikes', async ({ request }) => {
         await delay(300)
         const params = new URL(request.url).searchParams
         const loc = findLocation(params.get('location'))
@@ -112,7 +129,7 @@ export const handlers = [
         return HttpResponse.json(bikesNear(loc, radius))
     }),
 
-    http.get('*/air', async ({ request }) => {
+    apiGet('/air', async ({ request }) => {
         await delay(250)
         const params = new URL(request.url).searchParams
         const loc = findLocation(params.get('location'))
@@ -122,7 +139,7 @@ export const handlers = [
         )
     }),
 
-    http.get('*/roads', async ({ request }) => {
+    apiGet('/roads', async ({ request }) => {
         await delay(250)
         const params = new URL(request.url).searchParams
         const loc = findLocation(params.get('location'))
@@ -136,19 +153,19 @@ export const handlers = [
 
 // Handy overrides to test error states, e.g. worker.use(...errorHandlers)
 export const errorHandlers = [
-    http.get('*/arrivals', () =>
+    apiGet('/arrivals', () =>
         HttpResponse.json(
             { error: 'Upstream service unavailable' },
             { status: 502 }
         )
     ),
-    http.get('*/weather', () =>
+    apiGet('/weather', () =>
         HttpResponse.json(
             { error: 'Upstream service unavailable' },
             { status: 502 }
         )
     ),
-    http.get('*/lines', () =>
+    apiGet('/lines', () =>
         HttpResponse.json({ error: 'Internal error' }, { status: 500 })
     ),
 ]

@@ -1,3 +1,4 @@
+import type { Arrival, BikePoint, Stop, Timetable, Weather } from "@no2-way/shared";
 import { LOCATIONS } from "../shared/locations";
 import { fetchJson, tflUrl, cached } from "../shared/http";
 import { type Query, HttpError, LINE_ID, STOP_ID, requireLocation, requireParam } from "../shared/response";
@@ -17,7 +18,7 @@ interface OpenMeteoCurrent {
 }
 
 // GET /weather?location=camden (defaults to the first location)
-export async function getWeather(q: Query) {
+export async function getWeather(q: Query): Promise<Weather> {
   const loc = q.location ? requireLocation(q) : LOCATIONS[0];
 
   return cached(`weather:${loc.id}`, 10 * 60_000, async () => {
@@ -46,7 +47,7 @@ interface TflStopPoint {
 }
 
 // GET /lines/stops?line=northern
-export async function getLineStops(q: Query) {
+export async function getLineStops(q: Query): Promise<Stop[]> {
   const line = requireParam(q, "line", LINE_ID);
 
   // Stations rarely change: cache for 24h
@@ -72,7 +73,7 @@ interface TflArrival {
 }
 
 // GET /arrivals?stop=940GZZLUKSX&line=northern&direction=outbound
-export async function getArrivals(q: Query) {
+export async function getArrivals(q: Query): Promise<Arrival[]> {
   const stop = requireParam(q, "stop", STOP_ID);
   const line = q.line ? requireParam(q, "line", LINE_ID) : undefined;
   const direction = q.direction;
@@ -126,7 +127,7 @@ const distanceMeters = (lat1: number, lon1: number, lat2: number, lon2: number):
 };
 
 // GET /bikes?location=camden&radius=500
-export async function getBikes(q: Query) {
+export async function getBikes(q: Query): Promise<BikePoint[]> {
   const loc = requireLocation(q);
   const radius = Math.min(Number(q.radius ?? 500) || 500, 2000);
 
@@ -182,7 +183,7 @@ const toHHMM = (minutes: number): string => {
 };
 
 // GET /timetable?line=northern&stop=940GZZLUKSX&direction=outbound
-export async function getTimetable(q: Query) {
+export async function getTimetable(q: Query): Promise<Timetable> {
   const line = requireParam(q, "line", LINE_ID);
   const stop = requireParam(q, "stop", STOP_ID);
   const direction = q.direction ?? "outbound";

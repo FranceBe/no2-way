@@ -1,6 +1,5 @@
 import { queryOptions, useQuery } from '@tanstack/react-query'
 import { apiFetch } from '../client'
-import type { AirReading } from '../types'
 import { MINUTE } from './durations'
 
 // Ingested every hour
@@ -8,7 +7,7 @@ export const airQuery = (location: string, hours?: number) =>
     queryOptions({
         queryKey: ['air', location, hours],
         queryFn: ({ signal }) =>
-            apiFetch<AirReading[]>('/air', {
+            apiFetch('/air', {
                 params: { location, hours },
                 signal,
             }),

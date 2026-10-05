@@ -1,6 +1,6 @@
 import { queryOptions, skipToken, useQuery } from '@tanstack/react-query'
 import { apiFetch } from '../client'
-import type { Arrival, Direction } from '../types'
+import type { Direction } from '@no2-way/shared'
 import { SECOND } from './durations'
 
 // Live data, cached 20 s by the API. Waits (skipToken) while no stop is selected
@@ -13,7 +13,7 @@ export const arrivalsQuery = (
         queryKey: ['arrivals', stop, line, direction],
         queryFn: stop
             ? ({ signal }) =>
-                  apiFetch<Arrival[]>('/arrivals', {
+                  apiFetch('/arrivals', {
                       params: { stop, line, direction },
                       signal,
                   })

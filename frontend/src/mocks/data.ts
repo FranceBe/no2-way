@@ -11,7 +11,7 @@ import type {
     Stop,
     Timetable,
     Weather,
-} from '../api/types'
+} from '@no2-way/shared'
 
 // ---------- Helpers ----------
 

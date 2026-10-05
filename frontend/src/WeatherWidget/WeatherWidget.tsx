@@ -1,5 +1,5 @@
 import { useWeather } from '../api/queries'
-import type { Location } from '../api/types'
+import type { Location } from '@no2-way/shared'
 import { WeatherCard, WeatherCardMessage } from './WeatherCard'
 
 type WeatherWidgetProps = {

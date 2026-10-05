@@ -1,6 +1,5 @@
 import { queryOptions, skipToken, useQuery } from '@tanstack/react-query'
 import { apiFetch } from '../client'
-import type { LineHistoryEntry } from '../types'
 import { MINUTE } from './durations'
 
 // Waits (skipToken) while no line is selected
@@ -9,7 +8,7 @@ export const lineHistoryQuery = (line: string | undefined, hours?: number) =>
         queryKey: ['lines', 'history', line, hours],
         queryFn: line
             ? ({ signal }) =>
-                  apiFetch<LineHistoryEntry[]>('/lines/history', {
+                  apiFetch('/lines/history', {
                       params: { line, hours },
                       signal,
                   })

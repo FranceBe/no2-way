@@ -1,4 +1,4 @@
-import type { AirReading } from '../api/types'
+import type { AirReading } from '@no2-way/shared'
 
 // Deterministic data for stories and tests (same shape as GET /air)
 

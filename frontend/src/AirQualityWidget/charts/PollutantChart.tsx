@@ -8,7 +8,7 @@ import {
     XAxis,
     YAxis,
 } from 'recharts'
-import type { AirReading } from '../../api/types'
+import type { AirReading } from '@no2-way/shared'
 import type { Pollutant } from '../aqi'
 import { InfoTip } from '../InfoTip'
 import { useAirPalette } from '../palette'

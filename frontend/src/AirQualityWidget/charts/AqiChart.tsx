@@ -9,7 +9,7 @@ import {
     YAxis,
     type DotItemDotProps,
 } from 'recharts'
-import type { AirReading } from '../../api/types'
+import type { AirReading } from '@no2-way/shared'
 import { AQI_LEVELS, getAqiLevel, POOR_THRESHOLD } from '../aqi'
 import { BAND_OPACITY, useAirPalette } from '../palette'
 import { formatTick, getTimeTicks } from '../time'

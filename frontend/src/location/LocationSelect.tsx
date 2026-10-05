@@ -1,5 +1,5 @@
 import { useId } from 'react'
-import type { Location } from '../api/types'
+import type { Location } from '@no2-way/shared'
 import './LocationSelect.css'
 
 type LocationSelectProps = {

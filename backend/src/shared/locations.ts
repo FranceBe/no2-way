@@ -1,10 +1,6 @@
-export interface Location {
-  id: string;
-  name: string;
-  lat: number;
-  lon: number;
-  corridor: string;
-}
+import type { Location } from "@no2-way/shared";
+
+export type { Location };
 
 export const LOCATIONS: Location[] = [
   // Center & North

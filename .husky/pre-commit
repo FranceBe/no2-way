@@ -6,6 +6,6 @@ if [ -s "$NVM_DIR/nvm.sh" ]; then
   nvm use --silent > /dev/null
 fi
 
-# Hooks run from the repository root; the frontend has its own package.json
-cd frontend
+# Each staged file goes to the closest lint-staged.config.js (frontend/,
+# backend/ or shared/), whose tasks run in that workspace
 npx lint-staged

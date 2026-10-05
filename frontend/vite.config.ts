@@ -12,6 +12,25 @@ const dirname = import.meta.dirname
 export default defineConfig({
     plugins: [react()],
     test: {
+        // Applies to `vitest run --project unit --coverage` (npm run coverage)
+        coverage: {
+            include: ['src/**/*.{ts,tsx}'],
+            exclude: [
+                'src/**/*.{test,stories}.{ts,tsx}',
+                'src/mocks/**',
+                'src/test/**',
+                'src/main.tsx',
+                'src/env.d.ts',
+            ],
+            // Checked by the pre-commit hook: the run fails below these.
+            // Set just under the current numbers; raise them as tests are added
+            thresholds: {
+                statements: 85,
+                branches: 80,
+                functions: 70,
+                lines: 85,
+            },
+        },
         projects: [
             {
                 // Unit tests: *.test.ts(x) files, run in jsdom

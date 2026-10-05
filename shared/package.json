@@ -1,0 +1,14 @@
+{
+    "name": "@no2-way/shared",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "description": "API contract shared by the backend, the front-end and its MSW mocks",
+    "exports": {
+        ".": "./src/index.ts"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "lint": "prettier --check . && eslint ."
+    }
+}

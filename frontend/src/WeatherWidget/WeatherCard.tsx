@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import type { Weather } from '../api/types'
+import type { Weather } from '@no2-way/shared'
 import {
     DropletIcon,
     getWeatherDisplay,

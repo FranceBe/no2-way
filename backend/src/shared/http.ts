@@ -33,3 +33,6 @@ export async function cached<T>(key: string, ttlMs: number, load: () => Promise<
   cache.set(key, { expires: Date.now() + ttlMs, value });
   return value;
 }
+
+// Tests only: forget every cached value
+export const clearCache = (): void => cache.clear();

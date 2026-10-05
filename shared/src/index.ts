@@ -1,4 +1,6 @@
-// API contract shared by the front-end and the MSW mocks
+// API contract: the single source of truth for response shapes.
+// The backend types its routes with it; the front-end and its MSW mocks read it.
+// Types only: nothing here ends up in a bundle
 
 export interface Location {
     id: string
@@ -112,3 +114,19 @@ export interface ApiError {
 }
 
 export type Direction = 'inbound' | 'outbound'
+
+// Response of every endpoint, by path (errors are always ApiError)
+export interface ApiResponses {
+    '/locations': Location[]
+    '/weather': Weather
+    '/air': AirReading[]
+    '/roads': RoadsResponse
+    '/lines': LinesSnapshot
+    '/lines/history': LineHistoryEntry[]
+    '/lines/stops': Stop[]
+    '/arrivals': Arrival[]
+    '/timetable': Timetable
+    '/bikes': BikePoint[]
+}
+
+export type ApiPath = keyof ApiResponses

@@ -1,4 +1,4 @@
-import type { Location } from '../api/types'
+import type { Location } from '@no2-way/shared'
 
 // Same shape as GET /locations, for stories and tests
 export const FIXTURE_LOCATIONS: Location[] = [

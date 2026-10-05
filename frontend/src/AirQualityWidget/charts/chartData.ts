@@ -1,4 +1,4 @@
-import type { AirReading } from '../../api/types'
+import type { AirReading } from '@no2-way/shared'
 import { parseTs } from '../time'
 
 // One point per hour, x = epoch ms so the time axis is linear (gaps stay gaps)

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { AirReading } from '../api/types'
+import type { AirReading } from '@no2-way/shared'
 import { AQI_LEVELS, getAqiLevel, summarize } from './aqi'
 
 const reading = (ts: string, european_aqi: number | null): AirReading => ({

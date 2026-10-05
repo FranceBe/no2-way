@@ -6,7 +6,7 @@ REST API serving London air quality, road status, TfL lines, live arrivals, time
 - **Method:** all endpoints are `GET`
 - **Format:** JSON (`content-type: application/json`)
 - **Times:** all timestamps are **UTC**, formatted `YYYY-MM-DDTHH:mm` (e.g. `2026-10-02T14:15`), except `expected` in `/arrivals` (full ISO 8601)
-- **Types:** every response shape is defined in `frontend/src/api/types.ts`
+- **Types:** every response shape is defined in `shared/src/index.ts` (`@no2-way/shared`), used by the backend routes, the front-end and its MSW mocks
 
 ## Overview
 
@@ -44,6 +44,7 @@ Every error returns a JSON body with a single `error` field:
 - **Rate limit:** 10 requests per second, bursts up to 20. Beyond that: `429`.
 - **CORS:** browsers may only call the API from the deployed site and `http://localhost:5173`.
 - **History window (`hours`):** default depends on the endpoint, maximum 720 (30 days). Invalid values fall back to the default.
+- **No pagination:** `/air`, `/roads` and `/lines/history` always return the whole window in one response, oldest first. The API reads every DynamoDB page itself; the front-end never receives a cursor.
 
 ---
 

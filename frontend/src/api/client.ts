@@ -1,4 +1,8 @@
-import type { ApiError as ApiErrorBody } from './types'
+import type {
+    ApiError as ApiErrorBody,
+    ApiPath,
+    ApiResponses,
+} from '@no2-way/shared'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -15,11 +19,12 @@ export class ApiError extends Error {
 
 type Params = Record<string, string | number | undefined>
 
-// GET on the API, typed JSON result. Undefined params are left out of the URL
-export async function apiFetch<T>(
-    path: string,
+// GET on the API. The result type comes from the path, as declared in the
+// shared contract. Undefined params are left out of the URL
+export async function apiFetch<P extends ApiPath>(
+    path: P,
     { params = {}, signal }: { params?: Params; signal?: AbortSignal } = {}
-): Promise<T> {
+): Promise<ApiResponses[P]> {
     const url = new URL(path, API_URL)
     for (const [key, value] of Object.entries(params)) {
         if (value !== undefined) url.searchParams.set(key, String(value))
@@ -39,5 +44,5 @@ export async function apiFetch<T>(
         const body = (await res.json().catch(() => null)) as ApiErrorBody | null
         throw new ApiError(res.status, body?.error ?? res.statusText)
     }
-    return (await res.json()) as T
+    return (await res.json()) as ApiResponses[P]
 }

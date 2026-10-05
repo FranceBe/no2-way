@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "coverage": "vitest run --coverage",
     "build": "esbuild src/ingest.ts src/ingest-tfl.ts src/api.ts --bundle --platform=node --target=node22 --format=esm --outdir=dist --out-extension:.js=.mjs --external:@aws-sdk/*",
     "typecheck": "tsc --noEmit",
     "lint": "eslint ."
@@ -18,15 +20,17 @@
     "@aws-sdk/client-dynamodb": "^3.1145.0",
     "@aws-sdk/lib-dynamodb": "^3.1145.0",
     "@eslint/css": "^2.0.0",
-    "@eslint/js": "^10.0.1",
     "@eslint/json": "^2.1.0",
     "@types/aws-lambda": "^8.10.164",
     "@types/node": "^26.6.4",
+    "@vitest/coverage-v8": "^5.0.3",
+    "aws-sdk-client-mock": "^4.1.0",
     "esbuild": "^0.28.2",
-    "eslint": "^10.11.0",
-    "globals": "^17.13.0",
     "jiti": "^2.7.0",
-    "typescript": "~5.9.0",
-    "typescript-eslint": "^8.71.0"
+    "msw": "^3.0.1",
+    "vitest": "^5.0.3"
+  },
+  "dependencies": {
+    "@no2-way/shared": "*"
   }
 }

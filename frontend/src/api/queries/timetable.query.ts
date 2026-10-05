@@ -1,6 +1,6 @@
 import { queryOptions, skipToken, useQuery } from '@tanstack/react-query'
 import { apiFetch } from '../client'
-import type { Direction, Timetable } from '../types'
+import type { Direction } from '@no2-way/shared'
 import { HOUR } from './durations'
 
 // First / last trains. Waits (skipToken) until both line and stop are selected
@@ -14,7 +14,7 @@ export const timetableQuery = (
         queryFn:
             line && stop
                 ? ({ signal }) =>
-                      apiFetch<Timetable>('/timetable', {
+                      apiFetch('/timetable', {
                           params: { line, stop, direction },
                           signal,
                       })

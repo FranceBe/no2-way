@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { beforeEach, describe, expect, it } from 'vitest'
-import type { Location, Weather } from '../api/types'
+import type { Location, Weather } from '@no2-way/shared'
 import { FIXTURE_LOCATIONS } from '../location/fixtures'
 import { renderWithProviders } from '../test/render'
 import { server } from '../test/server'

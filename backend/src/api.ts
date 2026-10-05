@@ -1,12 +1,17 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
+import type { ApiPath, ApiResponses } from "@no2-way/shared";
 import { LOCATIONS } from "./shared/locations";
 import { UpstreamError } from "./shared/http";
 import { type Query, HttpError, json } from "./shared/response";
 import { getAir, getRoads, getLines, getLineHistory } from "./routes/history";
 import { getWeather, getLineStops, getArrivals, getBikes, getTimetable } from "./routes/live";
 
-// Path -> handler. To add an endpoint: write its function, add one line here
-const routes: Record<string, (q: Query) => unknown> = {
+// Path -> handler. To add an endpoint: declare its response in @no2-way/shared,
+// write its function, add one line here. The type checks that every path of the
+// contract has a handler, and that each handler returns the declared shape
+type Routes = { [P in ApiPath]: (q: Query) => ApiResponses[P] | Promise<ApiResponses[P]> };
+
+const routes: Routes = {
   "/locations": () => LOCATIONS,
   "/weather": getWeather,
   "/air": getAir,
@@ -19,11 +24,13 @@ const routes: Record<string, (q: Query) => unknown> = {
   "/bikes": getBikes,
 };
 
+const isApiPath = (path: string): path is ApiPath => Object.hasOwn(routes, path);
+
 export const handler = async (
   event: APIGatewayProxyEventV2
 ): Promise<APIGatewayProxyResultV2> => {
-  const route = routes[event.rawPath];
-  if (!route) return json(404, { error: "Not found" });
+  if (!isApiPath(event.rawPath)) return json(404, { error: "Not found" });
+  const route: (q: Query) => unknown = routes[event.rawPath];
 
   try {
     return json(200, await route(event.queryStringParameters ?? {}));
