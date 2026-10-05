@@ -8,5 +8,7 @@ export default {
         // Unit tests that import one of the staged files, directly or not
         (files) =>
             `vitest related --run --project unit --passWithNoTests ${files.join(' ')}`,
+        // Build project files
+        () => 'vite build',
     ],
 }
