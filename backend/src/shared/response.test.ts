@@ -1,5 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
-import { HttpError, json, LINE_ID, requireLocation, requireParam, sinceFrom, STOP_ID } from "./response";
+import {
+  HttpError,
+  json,
+  LINE_ID,
+  requireCoordinates,
+  requireLocation,
+  requireParam,
+  sinceFrom,
+  STOP_ID,
+} from "./response";
 
 describe("json", () => {
   it("builds a JSON response", () => {
@@ -19,6 +28,21 @@ describe("requireLocation", () => {
   it.each([{}, { location: "atlantis" }, { location: "" }])("rejects %j with a 400", (query) => {
     expect(() => requireLocation(query)).toThrow(new HttpError(400, "Unknown or missing location"));
   });
+});
+
+describe("requireCoordinates", () => {
+  it("returns the point as numbers", () => {
+    expect(requireCoordinates({ lat: "51.5392", lon: "-0.1426" })).toEqual({ lat: 51.5392, lon: -0.1426 });
+  });
+
+  it.each([{}, { lat: "51.5" }, { lon: "-0.1" }, { lat: "", lon: "" }, { lat: "51.5", lon: "x" }, { lat: "55.95", lon: "-3.19" }])(
+    "rejects %j with a 400",
+    (query) => {
+      expect(() => requireCoordinates(query)).toThrow(
+        expect.objectContaining({ status: 400, message: "Invalid lat/lon: expected a point in London" })
+      );
+    }
+  );
 });
 
 describe("requireParam", () => {

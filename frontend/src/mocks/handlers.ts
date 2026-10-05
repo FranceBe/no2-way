@@ -16,6 +16,7 @@ import {
     bikesNear,
     findLocation,
     lineHistory,
+    nearestLocation,
     roadSeries,
     timetableFor,
     weatherFor,
@@ -120,13 +121,32 @@ export const handlers = [
     apiGet('/bikes', async ({ request }) => {
         await delay(300)
         const params = new URL(request.url).searchParams
-        const loc = findLocation(params.get('location'))
-        if (!loc) return badRequest('Unknown or missing location')
         const radius = Math.min(
             Number(params.get('radius') ?? 500) || 500,
             2000
         )
-        return HttpResponse.json(bikesNear(loc, radius))
+
+        // Around a point (a stop): same London bounds as the real API
+        if (params.has('lat') || params.has('lon')) {
+            const lat = Number(params.get('lat'))
+            const lon = Number(params.get('lon'))
+            const inLondon =
+                params.has('lat') &&
+                params.has('lon') &&
+                lat >= 51.2 &&
+                lat <= 51.8 &&
+                lon >= -0.6 &&
+                lon <= 0.4
+            if (!inLondon)
+                return badRequest('Invalid lat/lon: expected a point in London')
+            return HttpResponse.json(
+                bikesNear({ lat, lon }, nearestLocation(lat, lon).name, radius)
+            )
+        }
+
+        const loc = findLocation(params.get('location'))
+        if (!loc) return badRequest('Unknown or missing location')
+        return HttpResponse.json(bikesNear(loc, loc.name, radius))
     }),
 
     apiGet('/air', async ({ request }) => {

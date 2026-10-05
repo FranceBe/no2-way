@@ -1,13 +1,32 @@
 import { useCurrentLocation } from '../location/useSelectedLocation'
-import { ComingSoon } from './ComingSoon'
+import { LineAlerts } from '../Transport/alerts/LineAlerts'
+import { NearbyBikes } from '../Transport/bikes/NearbyBikes'
+import { Departures } from '../Transport/departures/Departures'
+import { IncidentHistory } from '../Transport/incidents/IncidentHistory'
+import { TransportControls } from '../Transport/selection/TransportControls'
+import { useTransportSelection } from '../Transport/selection/useTransportSelection'
+import { FirstLastTrains } from '../Transport/timetable/FirstLastTrains'
 
-// Placeholder until the transport widgets exist (lines, arrivals, bikes)
+// Lines status, then one board for the line / stop / direction picked in the
+// controls
 export const TransportPage = () => {
     const location = useCurrentLocation()
+    const { line, stop, direction } = useTransportSelection()
+
     return (
-        <ComingSoon title="Transport">
-            Tube lines, next departures and Santander bikes around{' '}
-            {location.name}.
-        </ComingSoon>
+        <div className="transport-page">
+            <LineAlerts />
+            <TransportControls />
+            <div className="transport-grid">
+                <Departures line={line} stop={stop} direction={direction} />
+                <FirstLastTrains
+                    line={line}
+                    stop={stop}
+                    direction={direction}
+                />
+                <IncidentHistory line={line} />
+                <NearbyBikes location={location} line={line} stop={stop} />
+            </div>
+        </div>
     )
 }

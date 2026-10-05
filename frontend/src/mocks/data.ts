@@ -132,6 +132,15 @@ export const LOCATIONS: Location[] = [
 export const findLocation = (id: string | null): Location | undefined =>
     LOCATIONS.find((loc) => loc.id === id)
 
+// The neighbourhood closest to a point (flat-earth distance is fine in London)
+export const nearestLocation = (lat: number, lon: number): Location =>
+    LOCATIONS.reduce((best, loc) =>
+        Math.hypot(loc.lat - lat, loc.lon - lon) <
+        Math.hypot(best.lat - lat, best.lon - lon)
+            ? loc
+            : best
+    )
+
 // ---------- Weather ----------
 
 export function weatherFor(loc: Location): Weather {
@@ -304,30 +313,32 @@ export function lineHistory(lineId: string, hours: number): LineHistoryEntry[] {
 
 // ---------- Stations ----------
 
+// Real positions (rounded), so the bikes around a stop are plausible
+const stop = (id: string, name: string, lat: number, lon: number): Stop => ({
+    id,
+    name: `${name} Underground Station`,
+    lat,
+    lon,
+})
+
 export const STOPS: Record<string, Stop[]> = {
     northern: [
-        { id: '940GZZLUAGL', name: 'Angel Underground Station' },
-        { id: '940GZZLUBNK', name: 'Bank Underground Station' },
-        { id: '940GZZLUCTN', name: 'Camden Town Underground Station' },
-        { id: '940GZZLUCPN', name: 'Clapham North Underground Station' },
-        { id: '940GZZLUEUS', name: 'Euston Underground Station' },
-        {
-            id: '940GZZLUKSX',
-            name: "King's Cross St. Pancras Underground Station",
-        },
-        { id: '940GZZLULNB', name: 'London Bridge Underground Station' },
-        { id: '940GZZLUMDN', name: 'Morden Underground Station' },
+        stop('940GZZLUAGL', 'Angel', 51.5322, -0.1058),
+        stop('940GZZLUBNK', 'Bank', 51.5133, -0.0886),
+        stop('940GZZLUCTN', 'Camden Town', 51.5392, -0.1426),
+        stop('940GZZLUCPN', 'Clapham North', 51.4649, -0.1299),
+        stop('940GZZLUEUS', 'Euston', 51.5282, -0.1337),
+        stop('940GZZLUKSX', "King's Cross St. Pancras", 51.5304, -0.1239),
+        stop('940GZZLULNB', 'London Bridge', 51.5052, -0.0864),
+        stop('940GZZLUMDN', 'Morden', 51.4022, -0.1948),
     ],
     victoria: [
-        { id: '940GZZLUBXN', name: 'Brixton Underground Station' },
-        { id: '940GZZLUGPK', name: 'Green Park Underground Station' },
-        {
-            id: '940GZZLUKSX',
-            name: "King's Cross St. Pancras Underground Station",
-        },
-        { id: '940GZZLUOXC', name: 'Oxford Circus Underground Station' },
-        { id: '940GZZLUVIC', name: 'Victoria Underground Station' },
-        { id: '940GZZLUWWL', name: 'Walthamstow Central Underground Station' },
+        stop('940GZZLUBXN', 'Brixton', 51.4627, -0.1145),
+        stop('940GZZLUGPK', 'Green Park', 51.5067, -0.1428),
+        stop('940GZZLUKSX', "King's Cross St. Pancras", 51.5304, -0.1239),
+        stop('940GZZLUOXC', 'Oxford Circus', 51.5152, -0.1415),
+        stop('940GZZLUVIC', 'Victoria', 51.4965, -0.1447),
+        stop('940GZZLUWWL', 'Walthamstow Central', 51.583, -0.0195),
     ],
 }
 
@@ -446,8 +457,13 @@ export function timetableFor(
 
 // ---------- Bikes ----------
 
-export function bikesNear(loc: Location, radius: number): BikePoint[] {
-    const rand = seededRandom(`bikes:${loc.id}`)
+// Docks around a neighbourhood or any point (a stop); `area` names them
+export function bikesNear(
+    center: { lat: number; lon: number },
+    area: string,
+    radius: number
+): BikePoint[] {
+    const rand = seededRandom(`bikes:${center.lat},${center.lon}`)
     const streets = [
         'High Street',
         'Road',
@@ -468,9 +484,9 @@ export function bikesNear(loc: Location, radius: number): BikePoint[] {
         const bikes = Math.floor(rand() * docks)
         points.push({
             id: `BikePoints_${1000 + i}`,
-            name: `${streets[i % streets.length]}, ${loc.name}`,
-            lat: loc.lat + (distance / 111_000) * Math.cos(angle),
-            lon: loc.lon + (distance / 69_000) * Math.sin(angle),
+            name: `${streets[i % streets.length]}, ${area}`,
+            lat: center.lat + (distance / 111_000) * Math.cos(angle),
+            lon: center.lon + (distance / 69_000) * Math.sin(angle),
             bikes,
             emptyDocks: docks - bikes,
             docks,

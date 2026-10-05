@@ -1,0 +1,104 @@
+.departure-boards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: 14px;
+}
+
+/* ---------- Platform sign ---------- */
+
+.departure-board {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+}
+
+.departure-board__platform {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.departure-board__line {
+    align-self: center;
+    flex: none;
+    width: 4px;
+    height: 14px;
+    border-radius: 2px;
+    /* Northern is black: the ring keeps it visible on a dark surface */
+    box-shadow: 0 0 0 1px var(--color-border);
+}
+
+.departure-board__heading {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--color-muted);
+}
+
+/* ---------- The screen ---------- */
+
+.departure-screen {
+    display: grid;
+    gap: 2px;
+    margin: 0;
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-sm);
+    background:
+        /* Faint scanlines, the only texture: it reads as a screen */
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0 2px,
+            rgba(255, 255, 255, 0.018) 2px 3px
+        ),
+        var(--board-bg);
+    box-shadow: inset 0 1px 6px rgba(0, 0, 0, 0.6);
+    list-style: none;
+    font-family: var(--font-heading);
+    font-variant-numeric: tabular-nums;
+    color: var(--board-text);
+    text-shadow: 0 0 6px rgba(255, 178, 26, 0.25);
+}
+
+.departure-screen__row {
+    display: grid;
+    /* Fixed index column: the bigger first row stays aligned with the others */
+    grid-template-columns: 16px minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 15px;
+    line-height: 1.6;
+
+    /* The next train leads */
+    &:first-child {
+        font-size: 17px;
+        font-weight: 600;
+    }
+}
+
+.departure-screen__index,
+.departure-screen__via {
+    color: var(--board-dim);
+}
+
+.departure-screen__destination {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.departure-screen__via {
+    font-size: 0.85em;
+    font-weight: 400;
+}
+
+.departure-screen__due {
+    white-space: nowrap;
+}
+
+.departure-screen--empty {
+    padding: 16px 14px;
+    font-size: 15px;
+    text-align: center;
+}

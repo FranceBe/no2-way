@@ -312,8 +312,8 @@ Stations served by a line, sorted alphabetically.
 
 ```json
 [
-  { "id": "940GZZLUAGL", "name": "Angel Underground Station" },
-  { "id": "940GZZLUKSX", "name": "King's Cross St. Pancras Underground Station" }
+  { "id": "940GZZLUAGL", "name": "Angel Underground Station", "lat": 51.5322, "lon": -0.1058 },
+  { "id": "940GZZLUKSX", "name": "King's Cross St. Pancras Underground Station", "lat": 51.5304, "lon": -0.1239 }
 ]
 ```
 
@@ -321,6 +321,7 @@ Stations served by a line, sorted alphabetically.
 |---|---|---|
 | `id` | string | Station id (NaPTAN), used by `/arrivals` and `/timetable` |
 | `name` | string | Full TfL name (you may strip " Underground Station") |
+| `lat`, `lon` | number | Station position, usable with `/bikes?lat=…&lon=…` |
 
 ---
 
@@ -407,16 +408,17 @@ First and last trains at a station, per type of day.
 
 ## GET /bikes
 
-Santander Cycles docking stations near a neighbourhood, closest first (max 20).
+Santander Cycles docking stations near a neighbourhood or a point (e.g. a station), closest first (max 20).
 
-**Parameters**
+**Parameters:** either `location`, or `lat` and `lon`
 
 | Name | Required | Description |
 |---|---|---|
-| `location` | Yes | Location `id` |
+| `location` | Without `lat`/`lon` | Location `id` |
+| `lat`, `lon` | Without `location` | A point in Greater London (lat 51.2–51.8, lon −0.6–0.4), e.g. a stop from `/lines/stops`. Anything else: `400` |
 | `radius` | No | Search radius in metres. Default `500`, max `2000` |
 
-**Example:** `GET /bikes?location=camden&radius=500`
+**Examples:** `GET /bikes?location=camden&radius=500`, `GET /bikes?lat=51.5392&lon=-0.1426`
 
 **Response:** `BikePoint[]`
 
@@ -440,7 +442,7 @@ Santander Cycles docking stations near a neighbourhood, closest first (max 20).
 | `bikes` | number | Bikes available |
 | `emptyDocks` | number | Free docks to return a bike |
 | `docks` | number | Total docks |
-| `distance` | number | Distance from the neighbourhood centre, metres |
+| `distance` | number | Distance from the neighbourhood centre (or the given point), metres |
 
 ---
 

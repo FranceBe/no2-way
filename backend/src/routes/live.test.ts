@@ -73,15 +73,15 @@ describe("getWeather", () => {
 });
 
 describe("getLineStops", () => {
-  it("returns the stations of the line sorted by name", async () => {
+  it("returns the stations of the line sorted by name, with their coordinates", async () => {
     stub(`${TFL}/Line/northern/StopPoints`, [
-      { naptanId: "940GZZLUKSX", commonName: "King's Cross St. Pancras Underground Station" },
-      { naptanId: "940GZZLUCTN", commonName: "Camden Town Underground Station" },
+      { naptanId: "940GZZLUKSX", commonName: "King's Cross St. Pancras Underground Station", lat: 51.5304, lon: -0.1239, modes: ["tube"] },
+      { naptanId: "940GZZLUCTN", commonName: "Camden Town Underground Station", lat: 51.5392, lon: -0.1426, modes: ["tube"] },
     ]);
 
     expect(await getLineStops({ line: "northern" })).toEqual([
-      { id: "940GZZLUCTN", name: "Camden Town Underground Station" },
-      { id: "940GZZLUKSX", name: "King's Cross St. Pancras Underground Station" },
+      { id: "940GZZLUCTN", name: "Camden Town Underground Station", lat: 51.5392, lon: -0.1426 },
+      { id: "940GZZLUKSX", name: "King's Cross St. Pancras Underground Station", lat: 51.5304, lon: -0.1239 },
     ]);
   });
 
@@ -213,6 +213,26 @@ describe("getBikes", () => {
       expect.objectContaining({ bikes: 0, emptyDocks: 0, docks: 0 }),
     ]);
   });
+
+  it("searches around coordinates instead of a neighbourhood", async () => {
+    // King's Cross: Camden's docks are ~1.2 km away
+    stub(`${TFL}/BikePoint`, [bikePoint("camden", 0), bikePoint("kings-cross", -0.0086)]);
+
+    const result = await getBikes({ lat: "51.5304", lon: "-0.142" });
+
+    expect(result.map((bike) => [bike.id, bike.distance])).toEqual([["kings-cross", 0]]);
+  });
+
+  // lon missing, not a number, Paris
+  it.each([{ lat: "51.53" }, { lat: "abc", lon: "-0.14" }, { lat: "48.85", lon: "2.35" }])(
+    "rejects coordinates %j",
+    async (query) => {
+      await expect(getBikes(query)).rejects.toMatchObject({
+        status: 400,
+        message: "Invalid lat/lon: expected a point in London",
+      });
+    }
+  );
 
   it("calls TfL once for every location", async () => {
     const requested = stub(`${TFL}/BikePoint`, [bikePoint("here", 0)]);

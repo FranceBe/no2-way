@@ -34,7 +34,9 @@ beforeEach(() => {
     server.use(
         http.get('*/locations', () => HttpResponse.json(FIXTURE_LOCATIONS)),
         http.get('*/weather', record('weather', weather)),
-        http.get('*/air', record('air', makeAirReadings()))
+        http.get('*/air', record('air', makeAirReadings())),
+        http.get('*/lines', () => HttpResponse.json({ ts: null, lines: [] })),
+        http.get('*/bikes', record('bikes', []))
     )
 })
 
@@ -120,8 +122,8 @@ describe('App', () => {
 
         fireEvent.click(within(tabs()).getByRole('link', { name: 'Transport' }))
         expect(
-            await screen.findByRole('region', { name: 'Transport' })
-        ).toHaveTextContent('around Hackney')
+            await screen.findByRole('region', { name: 'Bikes nearby' })
+        ).toHaveTextContent('Around Hackney')
         expect(currentUrl(router)).toBe('/transport?location=hackney')
     })
 

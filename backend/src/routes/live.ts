@@ -1,7 +1,15 @@
 import type { Arrival, BikePoint, Stop, Timetable, Weather } from "@no2-way/shared";
 import { LOCATIONS } from "../shared/locations";
 import { fetchJson, tflUrl, cached } from "../shared/http";
-import { type Query, HttpError, LINE_ID, STOP_ID, requireLocation, requireParam } from "../shared/response";
+import {
+  type Query,
+  HttpError,
+  LINE_ID,
+  STOP_ID,
+  requireCoordinates,
+  requireLocation,
+  requireParam,
+} from "../shared/response";
 
 // ---------- Weather ----------
 
@@ -44,6 +52,8 @@ export async function getWeather(q: Query): Promise<Weather> {
 interface TflStopPoint {
   naptanId: string;
   commonName: string;
+  lat: number;
+  lon: number;
 }
 
 // GET /lines/stops?line=northern
@@ -54,7 +64,7 @@ export async function getLineStops(q: Query): Promise<Stop[]> {
   return cached(`stops:${line}`, 24 * 3600_000, async () => {
     const stops = await fetchJson<TflStopPoint[]>(tflUrl(`/Line/${line}/StopPoints`));
     return stops
-      .map((stop) => ({ id: stop.naptanId, name: stop.commonName }))
+      .map((stop) => ({ id: stop.naptanId, name: stop.commonName, lat: stop.lat, lon: stop.lon }))
       .sort((a, b) => a.name.localeCompare(b.name));
   });
 }
@@ -126,9 +136,9 @@ const distanceMeters = (lat1: number, lon1: number, lat2: number, lon2: number):
   return 2 * 6_371_000 * Math.asin(Math.sqrt(a));
 };
 
-// GET /bikes?location=camden&radius=500
+// GET /bikes?location=camden&radius=500, or /bikes?lat=51.539&lon=-0.142 (around a stop)
 export async function getBikes(q: Query): Promise<BikePoint[]> {
-  const loc = requireLocation(q);
+  const center = q.lat !== undefined || q.lon !== undefined ? requireCoordinates(q) : requireLocation(q);
   const radius = Math.min(Number(q.radius ?? 500) || 500, 2000);
 
   // ~800 stations in one call, shared by all locations
@@ -145,7 +155,7 @@ export async function getBikes(q: Query): Promise<BikePoint[]> {
       bikes: prop(bike, "NbBikes"),
       emptyDocks: prop(bike, "NbEmptyDocks"),
       docks: prop(bike, "NbDocks"),
-      distance: Math.round(distanceMeters(loc.lat, loc.lon, bike.lat, bike.lon)),
+      distance: Math.round(distanceMeters(center.lat, center.lon, bike.lat, bike.lon)),
     }))
     .filter((bike) => bike.distance <= radius)
     .sort((a, b) => a.distance - b.distance)

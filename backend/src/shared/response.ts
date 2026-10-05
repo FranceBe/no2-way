@@ -27,6 +27,24 @@ export const requireLocation = (q: Query): Location => {
   return loc;
 };
 
+// Greater London, with a margin: anything outside is a client error
+const LONDON = { lat: [51.2, 51.8], lon: [-0.6, 0.4] } as const;
+
+// lat & lon from the client, e.g. a stop picked in the front-end
+export const requireCoordinates = (q: Query): { lat: number; lon: number } => {
+  const lat = Number(q.lat);
+  const lon = Number(q.lon);
+  const inLondon =
+    q.lat !== undefined &&
+    q.lon !== undefined &&
+    lat >= LONDON.lat[0] &&
+    lat <= LONDON.lat[1] &&
+    lon >= LONDON.lon[0] &&
+    lon <= LONDON.lon[1];
+  if (!inLondon) throw new HttpError(400, "Invalid lat/lon: expected a point in London");
+  return { lat, lon };
+};
+
 export const requireParam = (q: Query, name: string, pattern: RegExp): string => {
   const value = q[name];
   if (!value || !pattern.test(value)) throw new HttpError(400, `Invalid or missing ${name}`);

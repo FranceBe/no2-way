@@ -49,6 +49,8 @@ export interface LineHistoryEntry {
 export interface Stop {
     id: string
     name: string
+    lat: number
+    lon: number
 }
 
 export interface Arrival {
