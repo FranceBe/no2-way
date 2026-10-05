@@ -10,7 +10,12 @@ export default defineConfig([
     files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
     plugins: { js },
     extends: ["js/recommended"],
-    languageOptions: { globals: globals.node },
+    languageOptions: {
+      globals: globals.node,
+      // One typescript-eslint is shared by every workspace: without this, an
+      // editor linting several of them at once can't tell which root is ours
+      parserOptions: { tsconfigRootDir: import.meta.dirname },
+    },
   },
   tseslint.configs.recommended,
   {
