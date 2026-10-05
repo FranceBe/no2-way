@@ -249,20 +249,33 @@ Latest status of every Tube, Overground, DLR and Elizabeth line.
 | `statuses[].description` | string | e.g. `Good Service`, `Minor Delays` |
 | `statuses[].reason` | string \| null | Explanation, only when disrupted |
 
-**TfL line severity codes (main values)**
+**TfL line severity codes** (from `https://api.tfl.gov.uk/Line/Meta/Severity`)
 
-| Code | Meaning |
-|---|---|
-| 20 | Service Closed (e.g. at night) |
-| 10 | Good Service |
-| 9 | Minor Delays |
-| 6 | Severe Delays |
-| 5 | Part Closure |
-| 4 | Planned Closure |
-| 1 | Part Suspended |
-| 0 | Suspended |
+| Code | Meaning | Disruption? |
+|---|---|---|
+| 0 | Special Service | No |
+| 1 | Closed | Closure |
+| 2 | Suspended | Closure |
+| 3 | Part Suspended | Closure |
+| 4 | Planned Closure | Closure |
+| 5 | Part Closure | Closure |
+| 6 | Severe Delays | Severe |
+| 7 | Reduced Service | Minor |
+| 8 | Bus Service (rail replacement) | Closure |
+| 9 | Minor Delays | Minor |
+| 10 | Good Service | No |
+| 11 | Part Closed | Closure |
+| 12 | Exit Only | Minor |
+| 13 | No Step Free Access | Minor |
+| 14 | Change of frequency | Minor |
+| 15 | Diverted | Minor |
+| 16 | Not Running | Closure |
+| 17 | Issues Reported | Minor |
+| 18 | No Issues | No |
+| 19 | Information | No |
+| 20 | Service Closed (planned, e.g. at night) | No |
 
-> Lower is worse, except `20`. Treat `20` separately when computing the "worst" status.
+> The codes are **not ordered by gravity**: `16` (Not Running) is worse than `9` (Minor Delays), `0` is no incident. Don't compare them with `<` or `>`: map each code to a level, as the front-end does in `features/transport/utils/severity.ts`.
 
 ---
 

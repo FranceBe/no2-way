@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Incident } from './incidents'
 import {
-    disruptionLevel,
     formatDuration,
     incidentSpan,
     summarizeIncidents,
@@ -19,18 +18,6 @@ const incident = (
     severity,
     description: 'Minor Delays',
     reasons: [],
-})
-
-describe('disruptionLevel', () => {
-    it.each([
-        [9, 'minor'], // Minor Delays
-        [7, 'minor'], // Reduced Service
-        [6, 'severe'], // Severe Delays
-        [5, 'closure'], // Part Closure
-        [2, 'closure'], // Suspended
-    ])('severity %i is %s', (severity, level) => {
-        expect(disruptionLevel(severity)).toBe(level)
-    })
 })
 
 describe('formatDuration', () => {

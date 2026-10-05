@@ -20,7 +20,8 @@ export interface Weather {
     windSpeed: number
 }
 
-// TfL line severity: 10 = Good Service, lower = worse, 20 = Service Closed
+// TfL line severity code (0-20, see endpoints-doc.md). Not ordered by gravity:
+// 10 = Good Service, 20 = Service Closed (planned), 16 = Not Running
 export interface LineStatus {
     severity: number
     description: string

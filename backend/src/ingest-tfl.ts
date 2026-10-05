@@ -22,7 +22,7 @@ interface TflRoadStatus {
   statusSeverityDescription: string;
 }
 
-// Line severity is a number: 10 = Good Service, lower = worse, 20 = Service Closed
+// Line severity is a TfL code (0-20, see endpoints-doc.md), stored as is
 interface TflLineStatus {
   statusSeverity: number;
   statusSeverityDescription: string;

@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { act, screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { beforeEach, describe, expect, it } from 'vitest'
 import type { Location, Weather } from '@no2-way/shared'
@@ -86,5 +86,20 @@ describe('WeatherWidget', () => {
         expect(
             await screen.findByText('Weather unavailable (Network error)')
         ).toBeInTheDocument()
+    })
+
+    it('keeps the last weather when a refresh fails', async () => {
+        const { client } = renderWidget()
+        await screen.findByRole('region', { name: 'Weather in Camden' })
+
+        server.use(http.get('*/weather', () => HttpResponse.error()))
+        await act(() => client.refetchQueries())
+
+        expect(
+            screen.getByRole('region', { name: 'Weather in Camden' })
+        ).toBeInTheDocument()
+        expect(
+            screen.queryByText(/Weather unavailable/)
+        ).not.toBeInTheDocument()
     })
 })

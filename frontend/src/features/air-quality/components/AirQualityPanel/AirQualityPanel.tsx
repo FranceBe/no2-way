@@ -1,5 +1,6 @@
 import { useId } from 'react'
 import type { AirReading } from '@no2-way/shared'
+import { formatHour } from '@/shared/time'
 import { POLLUTANTS } from '../../utils/aqi'
 import { AqiSummary } from '../AqiSummary/AqiSummary'
 import { AqiChart } from '../AqiChart/AqiChart'
@@ -14,7 +15,8 @@ type AirQualityPanelProps = {
     readings?: AirReading[]
     isLoading?: boolean
     isRefreshing?: boolean // previous data still shown while the new one loads
-    error?: string
+    error?: string // replaces the charts: there is nothing valid to show
+    staleSince?: number // a refresh failed: the readings shown date from then (ms)
 }
 
 // Presentational panel: no data fetching, so it can be rendered as-is in Storybook
@@ -26,6 +28,7 @@ export const AirQualityPanel = ({
     isLoading = false,
     isRefreshing = false,
     error,
+    staleSince,
 }: AirQualityPanelProps) => {
     const titleId = useId()
     const rangeLabel =
@@ -67,6 +70,12 @@ export const AirQualityPanel = ({
                     </div>
                 </div>
             </header>
+
+            {staleSince !== undefined && (
+                <p className="aq-panel__stale" role="status">
+                    Couldn’t refresh: showing data from {formatHour(staleSince)}
+                </p>
+            )}
 
             <PanelBody
                 readings={readings}

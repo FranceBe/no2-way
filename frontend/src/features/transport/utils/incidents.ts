@@ -1,36 +1,31 @@
 import type { Line, LineHistoryEntry, LineStatus } from '@no2-way/shared'
-
-// TfL severities: 10 = Good Service, 20 = Service Closed (planned, e.g. at
-// night), 18-19 = information. Anything below 10 is a disruption (delays,
-// suspensions, part closures…)
-export const GOOD_SERVICE = 10
+import { disruptionRank, isDisruption } from './severity'
 
 // One continuous disruption of a line, rebuilt from its 15-minute snapshots
 export interface Incident {
     start: string // ts of the first disrupted snapshot
     end: string | null // ts of the first snapshot back to normal; null = still going on
-    severity: number // worst (lowest) severity seen during the incident
+    severity: number // TfL code of the worst status seen during the incident
     description: string // description of that worst status, e.g. "Severe Delays"
     reasons: string[] // distinct reasons, in order of first appearance
 }
 
 // True when at least one status is a disruption
 export function isDisrupted(statuses: LineStatus[]): boolean {
-    return statuses.some((status) => status.severity < GOOD_SERVICE)
+    return statuses.some(isDisruption)
 }
 
-// Worst (lowest) severity among the statuses of a line
-const worstSeverity = (line: Line): number =>
-    Math.min(...line.statuses.map((status) => status.severity))
+// How bad the worst status of a line is (see disruptionRank)
+const worstRank = (line: Line): number =>
+    Math.max(...line.statuses.map((status) => disruptionRank(status.severity)))
 
-// The lines disrupted now, worst first (lowest severity), then by name
+// The lines disrupted now, worst first, then by name
 export function disruptedLines(lines: Line[]): Line[] {
     return lines
         .filter((line) => isDisrupted(line.statuses))
         .sort(
             (a, b) =>
-                worstSeverity(a) - worstSeverity(b) ||
-                a.name.localeCompare(b.name)
+                worstRank(b) - worstRank(a) || a.name.localeCompare(b.name)
         )
 }
 
@@ -40,9 +35,7 @@ export function toIncidents(history: LineHistoryEntry[]): Incident[] {
     let current: Incident | null = null
 
     for (const entry of history) {
-        const disruptions = entry.statuses.filter(
-            (status) => status.severity < GOOD_SERVICE
-        )
+        const disruptions = entry.statuses.filter(isDisruption)
 
         // Back to normal: this snapshot closes the incident going on, if any
         if (disruptions.length === 0) {
@@ -51,25 +44,34 @@ export function toIncidents(history: LineHistoryEntry[]): Incident[] {
             continue
         }
 
+        // The gravest status of this snapshot (ties: the first one listed)
+        const worst = disruptions.reduce((worstSoFar, status) =>
+            disruptionRank(status.severity) >
+            disruptionRank(worstSoFar.severity)
+                ? status
+                : worstSoFar
+        )
+
         // First disrupted snapshot after a quiet period: open an incident
         if (!current) {
             current = {
                 start: entry.ts,
                 end: null,
-                severity: Infinity,
-                description: '',
+                severity: worst.severity,
+                description: worst.description,
                 reasons: [],
             }
             incidents.push(current)
+        } else if (
+            disruptionRank(worst.severity) > disruptionRank(current.severity)
+        ) {
+            current.severity = worst.severity
+            current.description = worst.description
         }
 
-        for (const status of disruptions) {
-            if (status.severity < current.severity) {
-                current.severity = status.severity
-                current.description = status.description
-            }
-            if (status.reason && !current.reasons.includes(status.reason)) {
-                current.reasons.push(status.reason)
+        for (const { reason } of disruptions) {
+            if (reason && !current.reasons.includes(reason)) {
+                current.reasons.push(reason)
             }
         }
     }

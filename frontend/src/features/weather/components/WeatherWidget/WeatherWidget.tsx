@@ -12,7 +12,8 @@ export const WeatherWidget = ({ location }: WeatherWidgetProps) => {
 
     if (isPending)
         return <WeatherCardMessage busy>Loading weather…</WeatherCardMessage>
-    if (error)
+    // A failed refresh keeps the last weather: it is at most 10 min older
+    if (error && !weather)
         return (
             <WeatherCardMessage>
                 Weather unavailable ({error.message})

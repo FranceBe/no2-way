@@ -22,10 +22,15 @@ export const AirQualityWidget = ({
         isPending,
         error,
         isPlaceholderData,
+        dataUpdatedAt,
     } = useQuery({
         ...airQuery(location.id, hours),
         placeholderData: keepPreviousData,
     })
+
+    // A failed refresh keeps the readings on screen, but only if they are the
+    // ones asked for: placeholder data belongs to the previous location or range
+    const current = readings !== undefined && !isPlaceholderData
 
     return (
         <AirQualityPanel
@@ -34,8 +39,9 @@ export const AirQualityWidget = ({
             onHoursChange={setHours}
             readings={readings}
             isLoading={isPending}
-            isRefreshing={isPlaceholderData}
-            error={error?.message}
+            isRefreshing={isPlaceholderData && !error}
+            error={error && !current ? error.message : undefined}
+            staleSince={error && current ? dataUpdatedAt : undefined}
         />
     )
 }

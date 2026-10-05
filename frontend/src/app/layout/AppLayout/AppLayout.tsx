@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Outlet } from 'react-router'
 import { LocationSelect, useSelectedLocation } from '@/shared/location'
 import { Tabs } from '@/app/tabs/Tabs'
@@ -27,7 +28,16 @@ export const AppLayout = () => {
             <Tabs />
             <main className="app-main">
                 {location ? (
-                    <Outlet context={location} />
+                    // The pages are loaded lazily (see routes.tsx)
+                    <Suspense
+                        fallback={
+                            <p className="app-message" aria-busy>
+                                Loading…
+                            </p>
+                        }
+                    >
+                        <Outlet context={location} />
+                    </Suspense>
                 ) : (
                     <p className="app-message" aria-busy={isPending}>
                         {isPending

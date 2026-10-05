@@ -23,6 +23,18 @@ const severe = (reason = 'Faulty train'): LineStatus => ({
     reason,
 })
 
+// The TfL codes are not ordered by gravity: 16 is worse than 9, 0 is no incident
+const notRunning = (reason = 'Strike'): LineStatus => ({
+    severity: 16,
+    description: 'Not Running',
+    reason,
+})
+const SPECIAL: LineStatus = {
+    severity: 0,
+    description: 'Special Service',
+    reason: null,
+}
+
 const line = (id: string, ...statuses: LineStatus[]): Line => ({
     id,
     name: id[0].toUpperCase() + id.slice(1),
@@ -56,6 +68,11 @@ describe('isDisrupted', () => {
     it('is false without any status', () => {
         expect(isDisrupted([])).toBe(false)
     })
+
+    it('reads the TfL code, not a threshold', () => {
+        expect(isDisrupted([notRunning()])).toBe(true) // 16, above 10
+        expect(isDisrupted([SPECIAL])).toBe(false) // 0, below 10
+    })
 })
 
 describe('disruptedLines', () => {
@@ -74,6 +91,14 @@ describe('disruptedLines', () => {
             'lioness',
             'district',
             'victoria',
+        ])
+    })
+
+    it('ranks by gravity: Not Running (16) before Severe Delays (6)', () => {
+        const lines = [line('lioness', severe()), line('mildmay', notRunning())]
+        expect(disruptedLines(lines).map((l) => l.id)).toEqual([
+            'mildmay',
+            'lioness',
         ])
     })
 
@@ -117,6 +142,20 @@ describe('toIncidents', () => {
             severity: 6,
             description: 'Severe Delays',
         })
+    })
+
+    it('keeps the gravest status, whatever its code', () => {
+        const [incident] = toIncidents(
+            history([minor()], [notRunning()], [severe()], [GOOD])
+        )
+        expect(incident).toMatchObject({
+            severity: 16,
+            description: 'Not Running',
+        })
+    })
+
+    it('does not count a special service as an incident', () => {
+        expect(toIncidents(history([GOOD], [SPECIAL], [GOOD]))).toEqual([])
     })
 
     it('lists each reason once, in order of appearance', () => {

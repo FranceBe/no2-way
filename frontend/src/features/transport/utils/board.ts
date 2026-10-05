@@ -21,10 +21,6 @@ export function byPlatform(
 
     for (const arrival of arrivals) {
         const { platform } = arrival
-
-        if (!groups.has(platform)) {
-            groups.set(platform, [])
-        }
         const list = groups.get(platform) ?? []
         list.push(arrival)
         groups.set(platform, list)

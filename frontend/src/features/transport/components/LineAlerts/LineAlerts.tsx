@@ -26,7 +26,9 @@ export const LineAlertsView = ({ lines }: LineAlertsViewProps) => {
     }
 
     return (
-        <section className="line-alerts" role="alert">
+        // status, not alert: announced politely, without cutting off the
+        // screen reader every time the tab opens
+        <section className="line-alerts" role="status">
             <h2 className="line-alerts__title">
                 {lines.length === 1
                     ? '1 line disrupted'

@@ -23,3 +23,13 @@
     font-size: 14px;
     color: var(--color-muted);
 }
+
+/* Last refresh failed, the data shown is older than it should be */
+.transport-card__stale {
+    justify-self: start;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-2);
+    font-size: 12px;
+    color: var(--color-text-2);
+}

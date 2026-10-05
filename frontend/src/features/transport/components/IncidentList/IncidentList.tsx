@@ -1,10 +1,7 @@
 import { formatDateTime } from '@/shared/time'
 import type { Incident } from '../../utils/incidents'
-import {
-    disruptionLevel,
-    formatDuration,
-    incidentSpan,
-} from '../../utils/incidentView'
+import { formatDuration, incidentSpan } from '../../utils/incidentView'
+import { disruptionLevel } from '../../utils/severity'
 import './IncidentList.css'
 
 type IncidentListProps = {
@@ -42,7 +39,7 @@ export const IncidentList = ({ incidents, now }: IncidentListProps) => (
                             <td>
                                 <span className="incident-table__description">
                                     <span
-                                        className={`incident-swatch incident-swatch--${disruptionLevel(incident.severity)}`}
+                                        className={`incident-swatch incident-swatch--${disruptionLevel(incident.severity) ?? 'minor'}`}
                                         aria-hidden
                                     />
                                     {incident.description}

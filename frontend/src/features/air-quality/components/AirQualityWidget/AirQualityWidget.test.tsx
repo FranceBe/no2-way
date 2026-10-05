@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react'
+import { act, fireEvent, screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { renderWithProviders } from '@/shared/test/render'
@@ -76,5 +76,45 @@ describe('AirQualityWidget', () => {
                 'Air quality unavailable (Unknown or missing location)'
             )
         ).toBeInTheDocument()
+    })
+
+    describe('when a refresh fails', () => {
+        const failNextRequests = () =>
+            server.use(
+                http.get('*/air', () =>
+                    HttpResponse.json(
+                        { error: 'Upstream service unavailable' },
+                        { status: 502 }
+                    )
+                )
+            )
+
+        it('keeps the readings on screen and says they are not fresh', async () => {
+            const { client } = renderWidget()
+            await screen.findByText('Now')
+
+            failNextRequests()
+            await act(() => client.refetchQueries())
+
+            expect(
+                await screen.findByText(/^Couldn’t refresh: showing data from/)
+            ).toBeInTheDocument()
+            expect(screen.getByText('Now')).toBeInTheDocument()
+        })
+
+        it('does not pass off the previous range as the new one', async () => {
+            renderWidget()
+            await screen.findByText('Peak (48h)')
+
+            failNextRequests()
+            fireEvent.click(screen.getByRole('button', { name: '7d' }))
+
+            expect(
+                await screen.findByText(
+                    'Air quality unavailable (Upstream service unavailable)'
+                )
+            ).toBeInTheDocument()
+            expect(screen.queryByText('Peak (48h)')).not.toBeInTheDocument()
+        })
     })
 })

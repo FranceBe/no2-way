@@ -2,11 +2,8 @@ import { formatDateTime, parseTs } from '@/shared/time'
 import type { Incident } from '../../utils/incidents'
 import { IncidentList } from '../IncidentList/IncidentList'
 import { IncidentTimeline } from '../IncidentTimeline/IncidentTimeline'
-import {
-    DISRUPTION_LEVELS,
-    formatDuration,
-    summarizeIncidents,
-} from '../../utils/incidentView'
+import { formatDuration, summarizeIncidents } from '../../utils/incidentView'
+import { DISRUPTION_LEVELS } from '../../utils/severity'
 import './IncidentOverview.css'
 
 const WEEK = 7 * 24 * 3600e3

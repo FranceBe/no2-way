@@ -1,0 +1,59 @@
+# Same checks as the pre-commit hook, on the whole repo, plus what needs a
+# browser (Storybook stories and Playwright e2e)
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+# A new push on the same branch cancels the run still going
+concurrency:
+    group: ci-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    HUSKY: 0 # no git hooks to install on the runner
+
+jobs:
+    checks:
+        name: Types, lint, tests, builds
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: npm
+            - run: npm ci
+            - run: npm run typecheck
+            - run: npm run lint
+            # Unit tests of every workspace, failing under the coverage thresholds
+            - run: npm run coverage
+            - run: npm run build -w backend
+            - run: npm run build -w frontend
+
+    browser:
+        name: Stories & e2e
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: frontend
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: npm
+            - run: npm ci
+              working-directory: .
+            - run: npx playwright install --with-deps chromium
+            # Every story rendered in Chromium, with its a11y checks
+            - run: npx vitest run --project storybook
+            - run: npm run test:e2e
+            - uses: actions/upload-artifact@v4
+              if: failure()
+              with:
+                  name: playwright-report
+                  path: frontend/playwright-report
+                  retention-days: 7

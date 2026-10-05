@@ -1,5 +1,6 @@
 import { useId, type ReactNode } from 'react'
 import type { UseQueryResult } from '@tanstack/react-query'
+import { formatHour } from '@/shared/time'
 import './TransportCard.css'
 
 type TransportCardProps<T> = {
@@ -12,7 +13,9 @@ type TransportCardProps<T> = {
 }
 
 // Card shell shared by every transport widget: title, then the idle, loading
-// and error states, so each widget only renders its data
+// and error states, so each widget only renders its data.
+// A failed refresh keeps the last data on screen (react-query keeps it too):
+// departures from 30 s ago beat an error message
 export function TransportCard<T>({
     title,
     subtitle,
@@ -41,12 +44,20 @@ export function TransportCard<T>({
                 <p className="transport-card__message">{idle}</p>
             ) : query.isPending ? (
                 <p className="transport-card__message">Loading…</p>
-            ) : query.isError ? (
-                <p className="transport-card__message">
-                    Unavailable ({query.error.message})
-                </p>
+            ) : query.data !== undefined ? (
+                <>
+                    {query.isError && (
+                        <p className="transport-card__stale" role="status">
+                            Couldn’t refresh: showing data from{' '}
+                            {formatHour(query.dataUpdatedAt)}
+                        </p>
+                    )}
+                    {children(query.data)}
+                </>
             ) : (
-                children(query.data)
+                <p className="transport-card__message">
+                    Unavailable ({query.error?.message})
+                </p>
             )}
         </section>
     )

@@ -1,10 +1,7 @@
 import { formatDateTime, getTimeTicks } from '@/shared/time'
 import type { Incident } from '../../utils/incidents'
-import {
-    disruptionLevel,
-    formatDuration,
-    incidentSpan,
-} from '../../utils/incidentView'
+import { formatDuration, incidentSpan } from '../../utils/incidentView'
+import { disruptionLevel } from '../../utils/severity'
 import './IncidentTimeline.css'
 
 const HOUR = 3600e3
@@ -75,7 +72,7 @@ export const IncidentTimeline = ({
                         return (
                             <li
                                 key={incident.start}
-                                className={`incident-bar incident-bar--${disruptionLevel(incident.severity)}`}
+                                className={`incident-bar incident-bar--${disruptionLevel(incident.severity) ?? 'minor'}`}
                                 data-ongoing={ongoing || undefined}
                                 style={{
                                     left: `${left}%`,
