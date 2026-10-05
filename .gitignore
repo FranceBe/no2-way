@@ -12,3 +12,4 @@ private-doc.md
 tfplan
 # Lambda invoke outputs
 out.json
+.vscode

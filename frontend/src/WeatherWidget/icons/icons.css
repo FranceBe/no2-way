@@ -1,27 +1,46 @@
 /* Weather icon palette: each .wx-* class colours one part of an icon */
 :root {
-  --wx-sun: #f59e0b;
-  --wx-sun-fill: #fcd34d;
-  --wx-moon: #6366f1;
-  --wx-moon-fill: #e0e7ff;
-  --wx-cloud: #94a3b8;
-  --wx-cloud-fill: #f1f5f9;
-  --wx-cloud-wet: #64748b;
-  --wx-cloud-wet-fill: #e2e8f0;
-  --wx-cloud-storm: #475569;
-  --wx-cloud-storm-fill: #cbd5e1;
-  --wx-rain: #3b82f6;
-  --wx-snow: #38bdf8;
-  --wx-bolt: #f59e0b;
-  --wx-bolt-fill: #fde047;
-  --wx-fog: #a8b3c4;
-  --wx-wind: #14b8a6;
-  --wx-thermo: #ef4444;
+    --wx-sun: #f59e0b;
+    --wx-sun-fill: #fcd34d;
+    --wx-moon: #6366f1;
+    --wx-moon-fill: #e0e7ff;
+    --wx-cloud: #94a3b8;
+    --wx-cloud-fill: #f1f5f9;
+    --wx-cloud-wet: #64748b;
+    --wx-cloud-wet-fill: #e2e8f0;
+    --wx-cloud-storm: #475569;
+    --wx-cloud-storm-fill: #cbd5e1;
+    --wx-rain: #3b82f6;
+    --wx-snow: #38bdf8;
+    --wx-bolt: #f59e0b;
+    --wx-bolt-fill: #fde047;
+    --wx-fog: #a8b3c4;
+    --wx-wind: #14b8a6;
+    --wx-thermo: #ef4444;
 }
 
 /* Dark: OS setting (unless forced light) and forced dark, see theme/tokens.css */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+    :root:not([data-theme='light']) {
+        --wx-sun: #fbbf24;
+        --wx-sun-fill: #fde68a;
+        --wx-moon: #a5b4fc;
+        --wx-moon-fill: #312e81;
+        --wx-cloud: #cbd5e1;
+        --wx-cloud-fill: #475569;
+        --wx-cloud-wet: #94a3b8;
+        --wx-cloud-wet-fill: #334155;
+        --wx-cloud-storm: #94a3b8;
+        --wx-cloud-storm-fill: #1e293b;
+        --wx-rain: #60a5fa;
+        --wx-snow: #7dd3fc;
+        --wx-fog: #94a3b8;
+        --wx-wind: #2dd4bf;
+        --wx-thermo: #f87171;
+    }
+}
+
+:root[data-theme='dark'] {
     --wx-sun: #fbbf24;
     --wx-sun-fill: #fde68a;
     --wx-moon: #a5b4fc;
@@ -37,77 +56,58 @@
     --wx-fog: #94a3b8;
     --wx-wind: #2dd4bf;
     --wx-thermo: #f87171;
-  }
-}
-
-:root[data-theme="dark"] {
-  --wx-sun: #fbbf24;
-  --wx-sun-fill: #fde68a;
-  --wx-moon: #a5b4fc;
-  --wx-moon-fill: #312e81;
-  --wx-cloud: #cbd5e1;
-  --wx-cloud-fill: #475569;
-  --wx-cloud-wet: #94a3b8;
-  --wx-cloud-wet-fill: #334155;
-  --wx-cloud-storm: #94a3b8;
-  --wx-cloud-storm-fill: #1e293b;
-  --wx-rain: #60a5fa;
-  --wx-snow: #7dd3fc;
-  --wx-fog: #94a3b8;
-  --wx-wind: #2dd4bf;
-  --wx-thermo: #f87171;
 }
 
 .wx-sun {
-  stroke: var(--wx-sun);
-  fill: var(--wx-sun-fill);
+    stroke: var(--wx-sun);
+    fill: var(--wx-sun-fill);
 }
 .wx-sun-rays {
-  stroke: var(--wx-sun);
+    stroke: var(--wx-sun);
 }
 .wx-moon {
-  stroke: var(--wx-moon);
-  fill: var(--wx-moon-fill);
+    stroke: var(--wx-moon);
+    fill: var(--wx-moon-fill);
 }
 .wx-cloud {
-  stroke: var(--wx-cloud);
-  fill: var(--wx-cloud-fill);
+    stroke: var(--wx-cloud);
+    fill: var(--wx-cloud-fill);
 }
 .wx-cloud--wet {
-  stroke: var(--wx-cloud-wet);
-  fill: var(--wx-cloud-wet-fill);
+    stroke: var(--wx-cloud-wet);
+    fill: var(--wx-cloud-wet-fill);
 }
 .wx-cloud--storm {
-  stroke: var(--wx-cloud-storm);
-  fill: var(--wx-cloud-storm-fill);
+    stroke: var(--wx-cloud-storm);
+    fill: var(--wx-cloud-storm-fill);
 }
 .wx-rain {
-  stroke: var(--wx-rain);
+    stroke: var(--wx-rain);
 }
 .wx-drizzle {
-  fill: var(--wx-rain);
+    fill: var(--wx-rain);
 }
 .wx-snow {
-  stroke: var(--wx-snow);
+    stroke: var(--wx-snow);
 }
 .wx-bolt {
-  stroke: var(--wx-bolt);
-  fill: var(--wx-bolt-fill);
+    stroke: var(--wx-bolt);
+    fill: var(--wx-bolt-fill);
 }
 .wx-fog {
-  stroke: var(--wx-fog);
+    stroke: var(--wx-fog);
 }
 .wx-wind {
-  stroke: var(--wx-wind);
+    stroke: var(--wx-wind);
 }
 .wx-drop {
-  stroke: var(--wx-rain);
-  fill: color-mix(in srgb, var(--wx-rain) 25%, transparent);
+    stroke: var(--wx-rain);
+    fill: color-mix(in srgb, var(--wx-rain) 25%, transparent);
 }
 .wx-thermo {
-  stroke: var(--wx-thermo);
+    stroke: var(--wx-thermo);
 }
 .wx-thermo-level {
-  stroke: var(--wx-thermo);
-  fill: var(--wx-thermo);
+    stroke: var(--wx-thermo);
+    fill: var(--wx-thermo);
 }

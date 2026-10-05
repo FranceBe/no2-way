@@ -6,15 +6,15 @@ Use the Node version from `../.nvmrc` (`nvm use`).
 
 ## Scripts
 
-| Command | What it does |
-|---|---|
-| `npm run dev` | Dev server with mocked API (MSW) |
-| `npm run build` | Type-check and production build, against the real API |
-| `npm run lint` | ESLint |
-| `npm run storybook` | Component library on http://localhost:6006 |
-| `npm test` | All Vitest projects in watch mode (unit + stories) |
-| `npm run test:unit` | Unit tests only (jsdom) |
-| `npm run test:e2e` | Playwright end-to-end tests (`npx playwright show-report` after a failure) |
+| Command             | What it does                                                               |
+| ------------------- | -------------------------------------------------------------------------- |
+| `npm run dev`       | Dev server with mocked API (MSW)                                           |
+| `npm run build`     | Type-check and production build, against the real API                      |
+| `npm run lint`      | ESLint                                                                     |
+| `npm run storybook` | Component library on http://localhost:6006                                 |
+| `npm test`          | All Vitest projects in watch mode (unit + stories)                         |
+| `npm run test:unit` | Unit tests only (jsdom)                                                    |
+| `npm run test:e2e`  | Playwright end-to-end tests (`npx playwright show-report` after a failure) |
 
 ## API and mocks
 

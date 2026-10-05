@@ -1,73 +1,87 @@
-import { screen } from "@testing-library/react";
-import { http, HttpResponse } from "msw";
-import { beforeEach, describe, expect, it } from "vitest";
-import type { Weather } from "../api/types";
-import { renderWithProviders } from "../test/render";
-import { server } from "../test/server";
-import { WeatherWidget } from "./WeatherWidget";
+import { screen } from '@testing-library/react'
+import { http, HttpResponse } from 'msw'
+import { beforeEach, describe, expect, it } from 'vitest'
+import type { Weather } from '../api/types'
+import { renderWithProviders } from '../test/render'
+import { server } from '../test/server'
+import { WeatherWidget } from './WeatherWidget'
 
 const weather: Weather = {
-  time: "2026-10-05T14:00",
-  temperature: 9.2,
-  feelsLike: 7.4,
-  weatherCode: 63,
-  isDay: true,
-  precipitation: 2.1,
-  windSpeed: 21,
-};
+    time: '2026-10-05T14:00',
+    temperature: 9.2,
+    feelsLike: 7.4,
+    weatherCode: 63,
+    isDay: true,
+    precipitation: 2.1,
+    windSpeed: 21,
+}
 
 // Default answer for any location; tests can override it with server.use()
 beforeEach(() => {
-  server.use(http.get("*/weather", () => HttpResponse.json(weather)));
-});
+    server.use(http.get('*/weather', () => HttpResponse.json(weather)))
+})
 
-const renderWidget = (location?: string) => renderWithProviders(<WeatherWidget location={location} />);
+const renderWidget = (location?: string) =>
+    renderWithProviders(<WeatherWidget location={location} />)
 
-describe("WeatherWidget", () => {
-  it("shows a loading state, then the weather", async () => {
-    renderWidget();
+describe('WeatherWidget', () => {
+    it('shows a loading state, then the weather', async () => {
+        renderWidget()
 
-    expect(screen.getByText("Loading weather…")).toBeInTheDocument();
-    expect(await screen.findByRole("region", { name: "Weather in camden" })).toBeInTheDocument();
-    expect(screen.getByText("Rain", { selector: "p" })).toBeInTheDocument();
-    expect(screen.getByText("9°C")).toBeInTheDocument();
-    expect(screen.queryByText("Loading weather…")).not.toBeInTheDocument();
-  });
+        expect(screen.getByText('Loading weather…')).toBeInTheDocument()
+        expect(
+            await screen.findByRole('region', { name: 'Weather in camden' })
+        ).toBeInTheDocument()
+        expect(screen.getByText('Rain', { selector: 'p' })).toBeInTheDocument()
+        expect(screen.getByText('9°C')).toBeInTheDocument()
+        expect(screen.queryByText('Loading weather…')).not.toBeInTheDocument()
+    })
 
-  it("requests the weather of the given location", async () => {
-    let requestedLocation: string | null = null;
-    server.use(
-      http.get("*/weather", ({ request }) => {
-        requestedLocation = new URL(request.url).searchParams.get("location");
-        return HttpResponse.json(weather);
-      }),
-    );
+    it('requests the weather of the given location', async () => {
+        let requestedLocation: string | null = null
+        server.use(
+            http.get('*/weather', ({ request }) => {
+                requestedLocation = new URL(request.url).searchParams.get(
+                    'location'
+                )
+                return HttpResponse.json(weather)
+            })
+        )
 
-    renderWidget("brixton");
+        renderWidget('brixton')
 
-    expect(await screen.findByRole("region", { name: "Weather in brixton" })).toBeInTheDocument();
-    expect(requestedLocation).toBe("brixton");
-  });
+        expect(
+            await screen.findByRole('region', { name: 'Weather in brixton' })
+        ).toBeInTheDocument()
+        expect(requestedLocation).toBe('brixton')
+    })
 
-  it("shows the API error message", async () => {
-    server.use(
-      http.get("*/weather", () =>
-        HttpResponse.json({ error: "Unknown or missing location" }, { status: 400 }),
-      ),
-    );
+    it('shows the API error message', async () => {
+        server.use(
+            http.get('*/weather', () =>
+                HttpResponse.json(
+                    { error: 'Unknown or missing location' },
+                    { status: 400 }
+                )
+            )
+        )
 
-    renderWidget("atlantis");
+        renderWidget('atlantis')
 
-    expect(
-      await screen.findByText("Weather unavailable (Unknown or missing location)"),
-    ).toBeInTheDocument();
-  });
+        expect(
+            await screen.findByText(
+                'Weather unavailable (Unknown or missing location)'
+            )
+        ).toBeInTheDocument()
+    })
 
-  it("shows a network error when the API can't be reached", async () => {
-    server.use(http.get("*/weather", () => HttpResponse.error()));
+    it("shows a network error when the API can't be reached", async () => {
+        server.use(http.get('*/weather', () => HttpResponse.error()))
 
-    renderWidget();
+        renderWidget()
 
-    expect(await screen.findByText("Weather unavailable (Network error)")).toBeInTheDocument();
-  });
-});
+        expect(
+            await screen.findByText('Weather unavailable (Network error)')
+        ).toBeInTheDocument()
+    })
+})

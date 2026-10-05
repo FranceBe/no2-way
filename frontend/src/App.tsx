@@ -4,17 +4,17 @@ import { WeatherWidget } from './WeatherWidget/WeatherWidget'
 import './App.css'
 
 const App = () => {
-  return (
-    <>
-      <header className="app-header">
-        <ThemeToggle />
-        <WeatherWidget location="camden" />
-      </header>
-      <main className="app-main">
-        <AirQualityWidget location="camden" />
-      </main>
-    </>
-  )
+    return (
+        <>
+            <header className="app-header">
+                <ThemeToggle />
+                <WeatherWidget location="camden" />
+            </header>
+            <main className="app-main">
+                <AirQualityWidget location="camden" />
+            </main>
+        </>
+    )
 }
 
 export default App

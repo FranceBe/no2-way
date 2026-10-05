@@ -1,16 +1,16 @@
 // Global setup for the "unit" vitest project
-import "@testing-library/jest-dom/vitest";
-import { cleanup } from "@testing-library/react";
-import { afterAll, afterEach, beforeAll } from "vitest";
-import { server } from "./server";
+import '@testing-library/jest-dom/vitest'
+import { cleanup } from '@testing-library/react'
+import { afterAll, afterEach, beforeAll } from 'vitest'
+import { server } from './server'
 
 // Any request without a handler fails the test, so nothing reaches the network
-beforeAll(() => server.listen({ onUnhandledFrame: "error" }));
+beforeAll(() => server.listen({ onUnhandledFrame: 'error' }))
 
 afterEach(() => {
-  // Vitest globals are off, so Testing Library can't unmount automatically
-  cleanup();
-  server.resetHandlers();
-});
+    // Vitest globals are off, so Testing Library can't unmount automatically
+    cleanup()
+    server.resetHandlers()
+})
 
-afterAll(() => server.close());
+afterAll(() => server.close())

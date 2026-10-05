@@ -1,20 +1,20 @@
 .app-header {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  padding: 20px 24px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 24px;
 
-  @media (max-width: 1024px) {
-    padding: 16px;
-  }
+    @media (max-width: 1024px) {
+        padding: 16px;
+    }
 }
 
 .app-main {
-  padding: 0 24px 32px;
+    padding: 0 24px 32px;
 
-  @media (max-width: 1024px) {
-    padding: 0 16px 24px;
-  }
+    @media (max-width: 1024px) {
+        padding: 0 16px 24px;
+    }
 }

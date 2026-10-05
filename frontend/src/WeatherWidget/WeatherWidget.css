@@ -1,114 +1,130 @@
 .weather-card {
-  --wc-bg: linear-gradient(160deg, #dff0f3 0%, var(--color-surface) 65%);
-  --wc-badge-bg: radial-gradient(circle at 30% 25%, var(--color-surface) 0%, #dff0f3 100%);
+    --wc-bg: linear-gradient(160deg, #dff0f3 0%, var(--color-surface) 65%);
+    --wc-badge-bg: radial-gradient(
+        circle at 30% 25%,
+        var(--color-surface) 0%,
+        #dff0f3 100%
+    );
 
-  min-width: 240px;
-  padding: 14px 18px 12px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--wc-bg);
-  /* Relief: light top edge, darker bottom edge, soft drop shadow */
-  box-shadow:
-    var(--shadow-highlight),
-    inset 0 -2px 0 rgba(16, 25, 74, 0.06),
-    var(--shadow-sm),
-    var(--shadow-md);
-  text-align: left;
-  color: var(--color-text-2);
-  box-sizing: border-box;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+    min-width: 240px;
+    padding: 14px 18px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--wc-bg);
+    /* Relief: light top edge, darker bottom edge, soft drop shadow */
+    box-shadow:
+        var(--shadow-highlight),
+        inset 0 -2px 0 rgba(16, 25, 74, 0.06),
+        var(--shadow-sm),
+        var(--shadow-md);
+    text-align: left;
+    color: var(--color-text-2);
+    box-sizing: border-box;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 
-  &:hover {
-    transform: translateY(-1px);
-  }
+    &:hover {
+        transform: translateY(-1px);
+    }
 }
 
 .weather-card--night {
-  --wc-bg: linear-gradient(160deg, #e3e6f6 0%, var(--color-surface) 65%);
-  --wc-badge-bg: radial-gradient(circle at 30% 25%, var(--color-surface) 0%, #e3e6f6 100%);
+    --wc-bg: linear-gradient(160deg, #e3e6f6 0%, var(--color-surface) 65%);
+    --wc-badge-bg: radial-gradient(
+        circle at 30% 25%,
+        var(--color-surface) 0%,
+        #e3e6f6 100%
+    );
 }
 
 /* Dark: OS setting (unless forced light) and forced dark, see theme/tokens.css */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .weather-card {
-    --wc-bg: linear-gradient(160deg, #163246 0%, var(--color-surface) 65%);
-    --wc-badge-bg: radial-gradient(circle at 30% 25%, #24304a 0%, var(--color-surface) 100%);
-  }
-  :root:not([data-theme="light"]) .weather-card--night {
-    --wc-bg: linear-gradient(160deg, #1f2550 0%, var(--color-surface) 65%);
-  }
+    :root:not([data-theme='light']) .weather-card {
+        --wc-bg: linear-gradient(160deg, #163246 0%, var(--color-surface) 65%);
+        --wc-badge-bg: radial-gradient(
+            circle at 30% 25%,
+            #24304a 0%,
+            var(--color-surface) 100%
+        );
+    }
+    :root:not([data-theme='light']) .weather-card--night {
+        --wc-bg: linear-gradient(160deg, #1f2550 0%, var(--color-surface) 65%);
+    }
 }
 
-:root[data-theme="dark"] .weather-card {
-  --wc-bg: linear-gradient(160deg, #163246 0%, var(--color-surface) 65%);
-  --wc-badge-bg: radial-gradient(circle at 30% 25%, #24304a 0%, var(--color-surface) 100%);
+:root[data-theme='dark'] .weather-card {
+    --wc-bg: linear-gradient(160deg, #163246 0%, var(--color-surface) 65%);
+    --wc-badge-bg: radial-gradient(
+        circle at 30% 25%,
+        #24304a 0%,
+        var(--color-surface) 100%
+    );
 }
-:root[data-theme="dark"] .weather-card--night {
-  --wc-bg: linear-gradient(160deg, #1f2550 0%, var(--color-surface) 65%);
+:root[data-theme='dark'] .weather-card--night {
+    --wc-bg: linear-gradient(160deg, #1f2550 0%, var(--color-surface) 65%);
 }
 
 .weather-card--status {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 .weather-card__main {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
 
 .weather-card__icon {
-  display: grid;
-  place-items: center;
-  width: 64px;
-  height: 64px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: var(--wc-badge-bg);
-  border: 1px solid var(--color-border);
-  /* Slightly raised badge */
-  box-shadow:
-    var(--shadow-highlight),
-    var(--shadow-sm);
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--wc-badge-bg);
+    border: 1px solid var(--color-border);
+    /* Slightly raised badge */
+    box-shadow: var(--shadow-highlight), var(--shadow-sm);
 }
 
 .weather-card__location {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: var(--color-muted);
-  text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--color-muted);
+    text-transform: uppercase;
 }
 
 .weather-card__temp {
-  font-size: 34px;
-  font-weight: 600;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  font-family: var(--font-heading);
-  color: var(--color-text);
+    font-size: 34px;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-family: var(--font-heading);
+    color: var(--color-text);
 }
 
 .weather-card__label {
-  font-size: 14px;
-  color: var(--color-text-2);
+    font-size: 14px;
+    color: var(--color-text-2);
 }
 
 .weather-card__details {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 12px 0 0;
-  padding: 10px 0 0;
-  list-style: none;
-  border-top: 1px solid var(--color-border);
-  font-size: 13px;
-  font-variant-numeric: tabular-nums;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 12px 0 0;
+    padding: 10px 0 0;
+    list-style: none;
+    border-top: 1px solid var(--color-border);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
 
-  li {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    white-space: nowrap;
-  }
+    li {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+    }
 }
