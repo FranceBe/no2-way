@@ -1,0 +1,29 @@
+.theme-toggle {
+  display: inline-flex;
+  padding: 1px;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  background: var(--color-surface-2);
+}
+
+.theme-toggle__button {
+  padding: 2px 7px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--color-text-2);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+  &[aria-pressed="true"] {
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    color: var(--color-text);
+    font-weight: 600;
+  }
+}

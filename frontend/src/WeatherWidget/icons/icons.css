@@ -19,8 +19,9 @@
   --wx-thermo: #ef4444;
 }
 
+/* Dark: OS setting (unless forced light) and forced dark, see theme/tokens.css */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --wx-sun: #fbbf24;
     --wx-sun-fill: #fde68a;
     --wx-moon: #a5b4fc;
@@ -37,6 +38,24 @@
     --wx-wind: #2dd4bf;
     --wx-thermo: #f87171;
   }
+}
+
+:root[data-theme="dark"] {
+  --wx-sun: #fbbf24;
+  --wx-sun-fill: #fde68a;
+  --wx-moon: #a5b4fc;
+  --wx-moon-fill: #312e81;
+  --wx-cloud: #cbd5e1;
+  --wx-cloud-fill: #475569;
+  --wx-cloud-wet: #94a3b8;
+  --wx-cloud-wet-fill: #334155;
+  --wx-cloud-storm: #94a3b8;
+  --wx-cloud-storm-fill: #1e293b;
+  --wx-rain: #60a5fa;
+  --wx-snow: #7dd3fc;
+  --wx-fog: #94a3b8;
+  --wx-wind: #2dd4bf;
+  --wx-thermo: #f87171;
 }
 
 .wx-sun {
