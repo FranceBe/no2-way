@@ -110,3 +110,5 @@ export interface RoadsResponse {
 export interface ApiError {
   error: string;
 }
+
+export type Direction = "inbound" | "outbound";
