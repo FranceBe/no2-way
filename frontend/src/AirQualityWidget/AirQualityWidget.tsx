@@ -1,22 +1,21 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { airQuery, useLocations } from '../api/queries'
+import { airQuery } from '../api/queries'
+import type { Location } from '../api/types'
 import { AirQualityPanel } from './AirQualityPanel'
 
 type AirQualityWidgetProps = {
-    location?: string
+    location: Location
     hours?: number
 }
 
 export const AirQualityWidget = ({
-    location: initialLocation = 'camden',
+    location,
     hours: initialHours = 48,
 }: AirQualityWidgetProps) => {
-    const [location, setLocation] = useState(initialLocation)
     const [hours, setHours] = useState(initialHours)
 
-    const { data: locations = [] } = useLocations()
-    // GET /air?location=camden&hours=48. The previous series stays on screen
+    // GET /air?location=<id>&hours=48. The previous series stays on screen
     // while another location or range loads, instead of flashing a loader
     const {
         data: readings,
@@ -24,15 +23,13 @@ export const AirQualityWidget = ({
         error,
         isPlaceholderData,
     } = useQuery({
-        ...airQuery(location, hours),
+        ...airQuery(location.id, hours),
         placeholderData: keepPreviousData,
     })
 
     return (
         <AirQualityPanel
-            locations={locations}
-            location={location}
-            onLocationChange={setLocation}
+            locationName={location.name}
             hours={hours}
             onHoursChange={setHours}
             readings={readings}

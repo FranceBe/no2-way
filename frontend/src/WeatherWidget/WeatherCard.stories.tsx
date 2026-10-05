@@ -22,7 +22,7 @@ const meta = {
     component: WeatherCard,
     parameters: { layout: 'centered' },
     args: {
-        location: 'camden',
+        locationName: 'Camden',
         weather: baseWeather,
     },
 } satisfies Meta<typeof WeatherCard>
@@ -141,7 +141,7 @@ const allConditions: { name: string; weather: Partial<Weather> }[] = [
 
 export const AllConditions: Story = {
     parameters: { layout: 'padded' },
-    render: ({ location }) => (
+    render: ({ locationName }) => (
         <div
             style={{
                 display: 'grid',
@@ -152,7 +152,7 @@ export const AllConditions: Story = {
             {allConditions.map(({ name, weather }) => (
                 <WeatherCard
                     key={name}
-                    location={location}
+                    locationName={locationName}
                     weather={{ ...baseWeather, ...weather }}
                 />
             ))}

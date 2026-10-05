@@ -1,0 +1,33 @@
+.tabs {
+    display: flex;
+    gap: 4px;
+    margin: 0 24px 20px;
+    border-bottom: 1px solid var(--color-border);
+    overflow-x: auto;
+
+    @media (max-width: 1024px) {
+        margin: 0 16px 16px;
+    }
+}
+
+.tabs__link {
+    padding: 8px 14px;
+    /* Overlaps the nav's border so the active underline sits on it */
+    margin-bottom: -1px;
+    border-bottom: 2px solid transparent;
+    font-family: var(--font-heading);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--color-text-2);
+    text-decoration: none;
+    white-space: nowrap;
+
+    &:hover {
+        color: var(--color-accent);
+    }
+    &[aria-current='page'] {
+        border-bottom-color: var(--color-accent);
+        color: var(--color-text);
+        font-weight: 600;
+    }
+}

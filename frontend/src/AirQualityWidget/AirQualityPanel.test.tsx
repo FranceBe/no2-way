@@ -1,25 +1,22 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { AirQualityPanel } from './AirQualityPanel'
-import { FIXTURE_LOCATIONS, makeAirReadings } from './fixtures'
+import { makeAirReadings } from './fixtures'
 
 type PanelProps = Parameters<typeof AirQualityPanel>[0]
 
 const renderPanel = (props: Partial<PanelProps> = {}) => {
-    const onLocationChange = vi.fn()
     const onHoursChange = vi.fn()
     render(
         <AirQualityPanel
-            locations={FIXTURE_LOCATIONS}
-            location="camden"
-            onLocationChange={onLocationChange}
+            locationName="Camden"
             hours={48}
             onHoursChange={onHoursChange}
             readings={makeAirReadings()}
             {...props}
         />
     )
-    return { onLocationChange, onHoursChange }
+    return { onHoursChange }
 }
 
 // The value and meta of a stat tile, found by its label
@@ -38,30 +35,6 @@ describe('AirQualityPanel', () => {
     })
 
     describe('controls', () => {
-        it('lists the neighbourhoods and reports the selected one', () => {
-            const { onLocationChange } = renderPanel()
-            const select = screen.getByRole('combobox', {
-                name: 'Neighbourhood',
-            })
-
-            expect(select).toHaveValue('camden')
-            expect(
-                within(select)
-                    .getAllByRole('option')
-                    .map((o) => o.textContent)
-            ).toEqual(['Camden', 'Hackney', 'Brixton'])
-
-            fireEvent.change(select, { target: { value: 'brixton' } })
-            expect(onLocationChange).toHaveBeenCalledWith('brixton')
-        })
-
-        it('still shows the current location while the list is loading', () => {
-            renderPanel({ locations: [] })
-            expect(
-                screen.getByRole('combobox', { name: 'Neighbourhood' })
-            ).toHaveValue('camden')
-        })
-
         it('marks the selected range and reports a new one', () => {
             const { onHoursChange } = renderPanel()
             const ranges = screen.getByRole('group', { name: 'Time range' })

@@ -1,0 +1,13 @@
+import { useCurrentLocation } from '../location/useSelectedLocation'
+import { ComingSoon } from './ComingSoon'
+
+// Placeholder until the road congestion widget exists (GET /roads?corridor=…)
+export const RoadsPage = () => {
+    const location = useCurrentLocation()
+    return (
+        <ComingSoon title="Road congestion">
+            Traffic on the {location.corridor.toUpperCase()} corridor near{' '}
+            {location.name}.
+        </ComingSoon>
+    )
+}

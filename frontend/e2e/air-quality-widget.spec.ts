@@ -96,12 +96,14 @@ test.describe('Air quality widget', () => {
         await panel.getByRole('button', { name: '7d' }).click()
         await expect(panel.getByText('Peak (7d)')).toBeVisible()
 
-        await panel
+        // The neighbourhood is picked in the header, for the whole app
+        await page
             .getByRole('combobox', { name: 'Neighbourhood' })
             .selectOption('hackney')
         await expect(
             panel.getByText('Hackney · European AQI, hourly')
         ).toBeVisible()
+        await expect(page).toHaveURL(/\/air-quality\?location=hackney$/)
 
         // StrictMode can replay the first request in dev: check which requests happened, not how many
         await expect

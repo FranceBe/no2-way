@@ -1,13 +1,14 @@
 import { useWeather } from '../api/queries'
+import type { Location } from '../api/types'
 import { WeatherCard, WeatherCardMessage } from './WeatherCard'
 
 type WeatherWidgetProps = {
-    location?: string
+    location: Location
 }
 
-export const WeatherWidget = ({ location = 'camden' }: WeatherWidgetProps) => {
-    // GET /weather?location=camden — `weather` is the response, kept in react-query's state
-    const { data: weather, isPending, error } = useWeather(location)
+export const WeatherWidget = ({ location }: WeatherWidgetProps) => {
+    // GET /weather?location=<id> — `weather` is the response, kept in react-query's state
+    const { data: weather, isPending, error } = useWeather(location.id)
 
     if (isPending)
         return <WeatherCardMessage busy>Loading weather…</WeatherCardMessage>
@@ -18,5 +19,5 @@ export const WeatherWidget = ({ location = 'camden' }: WeatherWidgetProps) => {
             </WeatherCardMessage>
         )
 
-    return <WeatherCard location={location} weather={weather} />
+    return <WeatherCard locationName={location.name} weather={weather} />
 }

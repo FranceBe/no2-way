@@ -1,7 +1,8 @@
 import { screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { beforeEach, describe, expect, it } from 'vitest'
-import type { Weather } from '../api/types'
+import type { Location, Weather } from '../api/types'
+import { FIXTURE_LOCATIONS } from '../location/fixtures'
 import { renderWithProviders } from '../test/render'
 import { server } from '../test/server'
 import { WeatherWidget } from './WeatherWidget'
@@ -21,7 +22,9 @@ beforeEach(() => {
     server.use(http.get('*/weather', () => HttpResponse.json(weather)))
 })
 
-const renderWidget = (location?: string) =>
+const [camden, , brixton] = FIXTURE_LOCATIONS
+
+const renderWidget = (location: Location = camden) =>
     renderWithProviders(<WeatherWidget location={location} />)
 
 describe('WeatherWidget', () => {
@@ -30,7 +33,7 @@ describe('WeatherWidget', () => {
 
         expect(screen.getByText('Loading weather…')).toBeInTheDocument()
         expect(
-            await screen.findByRole('region', { name: 'Weather in camden' })
+            await screen.findByRole('region', { name: 'Weather in Camden' })
         ).toBeInTheDocument()
         expect(screen.getByText('Rain', { selector: 'p' })).toBeInTheDocument()
         expect(screen.getByText('9°C')).toBeInTheDocument()
@@ -48,10 +51,10 @@ describe('WeatherWidget', () => {
             })
         )
 
-        renderWidget('brixton')
+        renderWidget(brixton)
 
         expect(
-            await screen.findByRole('region', { name: 'Weather in brixton' })
+            await screen.findByRole('region', { name: 'Weather in Brixton' })
         ).toBeInTheDocument()
         expect(requestedLocation).toBe('brixton')
     })
@@ -66,7 +69,7 @@ describe('WeatherWidget', () => {
             )
         )
 
-        renderWidget('atlantis')
+        renderWidget({ ...camden, id: 'atlantis' })
 
         expect(
             await screen.findByText(

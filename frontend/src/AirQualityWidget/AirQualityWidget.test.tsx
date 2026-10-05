@@ -4,7 +4,8 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { renderWithProviders } from '../test/render'
 import { server } from '../test/server'
 import { AirQualityWidget } from './AirQualityWidget'
-import { FIXTURE_LOCATIONS, makeAirReadings } from './fixtures'
+import { FIXTURE_LOCATIONS } from '../location/fixtures'
+import { makeAirReadings } from './fixtures'
 
 // Every /air request, as "location:hours"
 let airRequests: string[] = []
@@ -12,7 +13,6 @@ let airRequests: string[] = []
 beforeEach(() => {
     airRequests = []
     server.use(
-        http.get('*/locations', () => HttpResponse.json(FIXTURE_LOCATIONS)),
         http.get('*/air', ({ request }) => {
             const params = new URL(request.url).searchParams
             const hours = Number(params.get('hours'))
@@ -22,8 +22,10 @@ beforeEach(() => {
     )
 })
 
+const [camden, hackney] = FIXTURE_LOCATIONS
+
 const renderWidget = () =>
-    renderWithProviders(<AirQualityWidget location="camden" hours={48} />)
+    renderWithProviders(<AirQualityWidget location={camden} hours={48} />)
 
 describe('AirQualityWidget', () => {
     it('loads the last 48h of the given location', async () => {
@@ -44,16 +46,11 @@ describe('AirQualityWidget', () => {
         expect(airRequests).toEqual(['camden:48', 'camden:168'])
     })
 
-    it('refetches when the neighbourhood changes', async () => {
-        renderWidget()
-        await screen.findByRole('option', { name: 'Hackney' })
+    it('refetches when the location prop changes', async () => {
+        const { rerender } = renderWidget()
+        await screen.findByText('Now')
 
-        fireEvent.change(
-            screen.getByRole('combobox', { name: 'Neighbourhood' }),
-            {
-                target: { value: 'hackney' },
-            }
-        )
+        rerender(<AirQualityWidget location={hackney} hours={48} />)
 
         expect(
             await screen.findByText('Hackney · European AQI, hourly')

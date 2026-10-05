@@ -13,10 +13,18 @@ const weather = {
 // The app runs on another origin than the API, so stubbed responses need CORS headers
 const CORS = { 'Access-Control-Allow-Origin': '*' }
 
-const stubWeather = (page: Page, status: number, body: unknown) =>
-    page.route('http://api.e2e.test/weather?*', (route) =>
+const locations = [
+    { id: 'camden', name: 'Camden', lat: 51.539, lon: -0.142, corridor: 'a1' },
+]
+
+const stubWeather = async (page: Page, status: number, body: unknown) => {
+    await page.route('http://api.e2e.test/locations', (route) =>
+        route.fulfill({ json: locations, headers: CORS })
+    )
+    await page.route('http://api.e2e.test/weather?*', (route) =>
         route.fulfill({ status, json: body, headers: CORS })
     )
+}
 
 test.describe('Weather widget', () => {
     test('shows the current weather in the top right corner', async ({
@@ -31,7 +39,8 @@ test.describe('Weather widget', () => {
             new URL((await request).url()).searchParams.get('location')
         ).toBe('camden')
 
-        const widget = page.getByRole('region', { name: 'Weather in camden' })
+        // The name from /locations, not the id
+        const widget = page.getByRole('region', { name: 'Weather in Camden' })
         await expect(widget).toBeVisible()
         await expect(
             widget.getByRole('img', { name: 'Partly cloudy' })
@@ -68,6 +77,7 @@ test.describe('Weather widget', () => {
         // Hold the response until the loading state has been checked
         let release!: () => void
         const released = new Promise<void>((resolve) => (release = resolve))
+        await stubWeather(page, 200, weather)
         await page.route('http://api.e2e.test/weather?*', async (route) => {
             await released
             await route.fulfill({ json: weather, headers: CORS })
@@ -78,7 +88,7 @@ test.describe('Weather widget', () => {
         await expect(page.getByText('Loading weather…')).toBeVisible()
         release()
         await expect(
-            page.getByRole('region', { name: 'Weather in camden' })
+            page.getByRole('region', { name: 'Weather in Camden' })
         ).toBeVisible()
         await expect(page.getByText('Loading weather…')).toBeHidden()
     })

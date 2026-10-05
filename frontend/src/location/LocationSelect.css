@@ -1,0 +1,9 @@
+.location-select__input {
+    padding: 6px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    font: inherit;
+    font-size: 14px;
+    color: var(--color-text);
+}

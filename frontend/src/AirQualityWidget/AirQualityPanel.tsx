@@ -1,5 +1,5 @@
 import { useId } from 'react'
-import type { AirReading, Location } from '../api/types'
+import type { AirReading } from '../api/types'
 import { POLLUTANTS } from './aqi'
 import { AqiSummary } from './AqiSummary'
 import { AqiChart } from './charts/AqiChart'
@@ -8,9 +8,7 @@ import { RANGES } from './time'
 import './AirQualityWidget.css'
 
 type AirQualityPanelProps = {
-    locations: Location[]
-    location: string
-    onLocationChange: (location: string) => void
+    locationName: string
     hours: number
     onHoursChange: (hours: number) => void
     readings?: AirReading[]
@@ -21,9 +19,7 @@ type AirQualityPanelProps = {
 
 // Presentational panel: no data fetching, so it can be rendered as-is in Storybook
 export const AirQualityPanel = ({
-    locations,
-    location,
-    onLocationChange,
+    locationName,
     hours,
     onHoursChange,
     readings,
@@ -32,9 +28,6 @@ export const AirQualityPanel = ({
     error,
 }: AirQualityPanelProps) => {
     const titleId = useId()
-    const selectId = useId()
-    const locationName =
-        locations.find((l) => l.id === location)?.name ?? location
     const rangeLabel =
         RANGES.find((r) => r.hours === hours)?.label ?? `${hours}h`
 
@@ -55,25 +48,6 @@ export const AirQualityPanel = ({
                 </div>
 
                 <div className="aq-panel__controls">
-                    <label htmlFor={selectId} className="aq-visually-hidden">
-                        Neighbourhood
-                    </label>
-                    <select
-                        id={selectId}
-                        className="aq-select"
-                        value={location}
-                        onChange={(e) => onLocationChange(e.target.value)}
-                    >
-                        {locations.length === 0 && (
-                            <option value={location}>{locationName}</option>
-                        )}
-                        {locations.map((l) => (
-                            <option key={l.id} value={l.id}>
-                                {l.name}
-                            </option>
-                        ))}
-                    </select>
-
                     <div
                         className="aq-range"
                         role="group"

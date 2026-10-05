@@ -2,18 +2,17 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState, type ComponentProps } from 'react'
 import { fn } from 'storybook/test'
 import { AirQualityPanel } from './AirQualityPanel'
-import { FIXTURE_LOCATIONS, makeAirReadings } from './fixtures'
+import { makeAirReadings } from './fixtures'
 
 type PanelProps = ComponentProps<typeof AirQualityPanel>
 type FixtureOptions = NonNullable<Parameters<typeof makeAirReadings>[0]>
 
-// Keeps location and range in local state so the controls are clickable;
+// Keeps the range in local state so the controls are clickable;
 // readings are regenerated for the selected range
 const InteractivePanel = ({
     fixture,
     ...props
 }: PanelProps & { fixture?: FixtureOptions }) => {
-    const [location, setLocation] = useState(props.location)
     const [hours, setHours] = useState(props.hours)
     const readings = fixture
         ? makeAirReadings({ ...fixture, hours })
@@ -22,11 +21,6 @@ const InteractivePanel = ({
     return (
         <AirQualityPanel
             {...props}
-            location={location}
-            onLocationChange={(id) => {
-                setLocation(id)
-                props.onLocationChange(id)
-            }}
             hours={hours}
             onHoursChange={(h) => {
                 setHours(h)
@@ -49,10 +43,8 @@ const meta = {
         ),
     ],
     args: {
-        locations: FIXTURE_LOCATIONS,
-        location: 'camden',
+        locationName: 'Camden',
         hours: 48,
-        onLocationChange: fn(),
         onHoursChange: fn(),
     },
     render: (args, { parameters }) => (

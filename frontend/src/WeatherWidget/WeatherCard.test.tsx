@@ -15,21 +15,24 @@ const weather: Weather = {
 
 const renderCard = (overrides: Partial<Weather> = {}) =>
     render(
-        <WeatherCard location="camden" weather={{ ...weather, ...overrides }} />
+        <WeatherCard
+            locationName="Camden"
+            weather={{ ...weather, ...overrides }}
+        />
     )
 
 describe('WeatherCard', () => {
     it('is exposed as a region named after the location', () => {
         renderCard()
         expect(
-            screen.getByRole('region', { name: 'Weather in camden' })
+            screen.getByRole('region', { name: 'Weather in Camden' })
         ).toBeInTheDocument()
     })
 
     it('shows the location, the rounded temperature and the condition label', () => {
         renderCard()
         const card = screen.getByRole('region')
-        expect(within(card).getByText('camden')).toBeInTheDocument()
+        expect(within(card).getByText('Camden')).toBeInTheDocument()
         expect(within(card).getByText('18°C')).toBeInTheDocument()
         expect(
             within(card).getByText('Clear sky', { selector: 'p' })

@@ -1,0 +1,13 @@
+.coming-soon {
+    display: grid;
+    gap: 6px;
+    padding: 20px 24px;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+}
+
+.coming-soon__note {
+    font-size: 14px;
+    color: var(--color-muted);
+}

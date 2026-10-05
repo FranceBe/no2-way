@@ -9,12 +9,12 @@ import {
 import './WeatherWidget.css'
 
 type WeatherCardProps = {
-    location: string
+    locationName: string
     weather: Weather
 }
 
 // Presentational card: no data fetching, so it can be rendered as-is in Storybook
-export const WeatherCard = ({ location, weather }: WeatherCardProps) => {
+export const WeatherCard = ({ locationName, weather }: WeatherCardProps) => {
     const { Icon, label } = getWeatherDisplay(
         weather.weatherCode,
         weather.isDay
@@ -23,14 +23,14 @@ export const WeatherCard = ({ location, weather }: WeatherCardProps) => {
     return (
         <section
             className={`weather-card ${weather.isDay ? 'weather-card--day' : 'weather-card--night'}`}
-            aria-label={`Weather in ${location}`}
+            aria-label={`Weather in ${locationName}`}
         >
             <div className="weather-card__main">
                 <div className="weather-card__icon">
                     <Icon size={44} title={label} />
                 </div>
                 <div>
-                    <p className="weather-card__location">{location}</p>
+                    <p className="weather-card__location">{locationName}</p>
                     <p className="weather-card__temp">
                         {Math.round(weather.temperature)}°C
                     </p>

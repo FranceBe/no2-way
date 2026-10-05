@@ -11,10 +11,23 @@
     }
 }
 
+.app-header__end {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
 .app-main {
     padding: 0 24px 32px;
 
     @media (max-width: 1024px) {
         padding: 0 16px 24px;
     }
+}
+
+.app-message {
+    font-size: 14px;
+    color: var(--color-muted);
 }
