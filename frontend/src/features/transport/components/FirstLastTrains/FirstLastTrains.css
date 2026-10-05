@@ -1,0 +1,27 @@
+.transport-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+
+    th,
+    td {
+        padding: 6px 8px;
+        border-bottom: 1px solid var(--color-border);
+        text-align: left;
+    }
+    thead th {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--color-muted);
+    }
+    tbody th {
+        font-weight: 400;
+    }
+    td {
+        font-variant-numeric: tabular-nums;
+    }
+    tr[aria-current] {
+        background: var(--color-accent-soft);
+        font-weight: 600;
+    }
+}

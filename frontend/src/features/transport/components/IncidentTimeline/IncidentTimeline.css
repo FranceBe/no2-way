@@ -1,0 +1,140 @@
+/* ---------- Timeline ---------- */
+
+.incident-timeline {
+    margin: 0;
+}
+
+.incident-timeline__track {
+    position: relative;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-2);
+}
+
+.incident-timeline__gridline {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--viz-axis);
+}
+
+.incident-timeline__bars {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.incident-bar {
+    position: absolute;
+    top: 4px;
+    height: 20px;
+    /* A 15-minute incident is a fraction of a pixel over a week */
+    min-width: 4px;
+    border-radius: 4px;
+    background: var(--bar-color);
+    /* Surface ring: neighbours stay apart even when they almost touch */
+    box-shadow: 0 0 0 1px var(--color-surface-2);
+    cursor: default;
+
+    /* Hit area larger than the mark */
+    &::before {
+        content: '';
+        position: absolute;
+        inset: -4px -6px;
+    }
+
+    /* Still going on: the bar runs into the right edge, square end */
+    &[data-ongoing] {
+        border-radius: 4px 0 0 4px;
+    }
+
+    /* Lift: a ring in the bar's own colour (a filter would also fade the tooltip) */
+    &:hover,
+    &:focus-visible {
+        z-index: 2;
+        outline: none;
+        box-shadow:
+            0 0 0 2px var(--color-surface-2),
+            0 0 0 3px var(--bar-color);
+    }
+}
+
+.incident-bar--minor {
+    --bar-color: var(--disruption-minor);
+}
+.incident-bar--severe {
+    --bar-color: var(--disruption-severe);
+}
+.incident-bar--closure {
+    --bar-color: var(--disruption-closure);
+}
+
+/* ---------- Tooltip ---------- */
+
+.incident-tip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 0;
+    display: grid;
+    gap: 2px;
+    width: max-content;
+    /* cqw: the card's width (.incident-overview is the container) */
+    max-width: min(260px, 70cqw);
+    padding: 8px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm), var(--shadow-md);
+    font-size: 12px;
+    color: var(--color-text-2);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s;
+
+    &[data-align='center'] {
+        left: 50%;
+        translate: -50% 0;
+    }
+    &[data-align='end'] {
+        left: auto;
+        right: 0;
+    }
+
+    strong {
+        font-size: 13px;
+        color: var(--color-text);
+    }
+
+    .incident-bar:hover > &,
+    .incident-bar:focus-visible > & {
+        opacity: 1;
+    }
+}
+
+.incident-tip__reason {
+    color: var(--color-muted);
+}
+
+/* ---------- Axis ---------- */
+
+.incident-timeline__axis {
+    position: relative;
+    height: 18px;
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--viz-label);
+
+    > span {
+        position: absolute;
+        padding-left: 3px;
+        white-space: nowrap;
+    }
+}
+
+/* Not enough room for "Wed 30": keep the day number only */
+@container (max-width: 420px) {
+    .incident-timeline__weekday {
+        display: none;
+    }
+}

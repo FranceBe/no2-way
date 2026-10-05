@@ -1,0 +1,58 @@
+.info-tip {
+    display: inline-flex;
+    align-self: center;
+}
+
+.info-tip__button {
+    display: grid;
+    place-items: center;
+    padding: 2px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--color-muted);
+    cursor: help;
+
+    &:hover,
+    &[aria-expanded='true'] {
+        color: var(--color-accent);
+    }
+}
+
+/* Full width of the card, just under its header: always fits, even in the last column */
+.info-tip__panel {
+    display: none;
+    position: absolute;
+    z-index: 2;
+    top: 50px;
+    left: 8px;
+    right: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-md);
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--color-text-2);
+
+    p + p {
+        margin-top: 6px;
+    }
+}
+
+/* Hover for mouse users; click, tap or Enter toggles data-open for everyone */
+.info-tip:hover .info-tip__panel,
+.info-tip[data-open] .info-tip__panel {
+    display: block;
+}
+
+.info-tip__title {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.info-tip__meta {
+    font-size: 12px;
+    color: var(--color-muted);
+}

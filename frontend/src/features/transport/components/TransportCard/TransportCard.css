@@ -1,0 +1,25 @@
+.transport-card {
+    display: grid;
+    gap: 12px;
+    padding: 18px 20px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-highlight), var(--shadow-sm), var(--shadow-md);
+    min-width: 0;
+
+    &[aria-busy='true'] > :not(header) {
+        opacity: 0.6;
+        transition: opacity 0.2s;
+    }
+}
+
+.transport-card__title {
+    font-size: 18px;
+}
+
+.transport-card__subtitle,
+.transport-card__message {
+    font-size: 14px;
+    color: var(--color-muted);
+}

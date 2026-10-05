@@ -1,0 +1,47 @@
+.aq-pollutant {
+    position: relative; /* anchors the InfoTip panel */
+    margin: 0;
+    padding: 10px 12px 8px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.aq-pollutant__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+}
+
+/* Symbol + info button on the first line, plain name below */
+.aq-pollutant__title {
+    display: grid;
+    min-width: 0;
+}
+
+.aq-pollutant__symbol {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.aq-pollutant__name {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.aq-pollutant__fullname {
+    font-size: 12px;
+    color: var(--color-muted);
+}
+
+.aq-pollutant__value {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.aq-pollutant__footnote {
+    font-size: 12px;
+    color: var(--color-muted);
+}

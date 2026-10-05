@@ -8,6 +8,58 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import pluginQuery from '@tanstack/eslint-plugin-query'
 import { defineConfig, globalIgnores } from 'eslint/config'
+import { readdirSync } from 'node:fs'
+
+// Dependencies go one way: app -> features -> shared (see README)
+const FEATURES = readdirSync(new URL('./src/features', import.meta.url))
+const restrict = (files, patterns) => ({
+    files,
+    // Tests and stories may reach into a feature's utils and fixtures
+    ignores: ['**/*.test.{ts,tsx}', '**/*.stories.tsx'],
+    rules: { 'no-restricted-imports': ['error', { patterns }] },
+})
+const IMPORT_LAYERS = [
+    // The app goes through a feature's index.ts, never inside it
+    restrict(
+        ['src/app/**'],
+        [
+            {
+                group: ['@/features/*/**'],
+                message:
+                    "Import from the feature's index.ts: '@/features/<name>'",
+            },
+        ]
+    ),
+    // A feature knows nothing of the app, nor of the other features
+    ...FEATURES.map((feature) =>
+        restrict(
+            [`src/features/${feature}/**`],
+            [
+                {
+                    group: ['@/app/**'],
+                    message: 'A feature cannot import the app',
+                },
+                {
+                    group: FEATURES.filter((f) => f !== feature).map(
+                        (f) => `@/features/${f}`
+                    ),
+                    message:
+                        'Features are independent: move what they share to src/shared/',
+                },
+            ]
+        )
+    ),
+    // Shared code is used by everyone, so it depends on no one
+    restrict(
+        ['src/shared/**'],
+        [
+            {
+                group: ['@/app/**', '@/features/**'],
+                message: 'shared/ cannot import the app or a feature',
+            },
+        ]
+    ),
+]
 
 export default defineConfig([
     globalIgnores([
@@ -37,5 +89,6 @@ export default defineConfig([
             quotes: ['error', 'single', { avoidEscape: true }],
         },
     },
+    ...IMPORT_LAYERS,
     ...storybook.configs['flat/recommended'],
 ])

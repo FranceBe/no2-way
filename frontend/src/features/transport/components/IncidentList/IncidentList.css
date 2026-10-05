@@ -1,0 +1,57 @@
+.incident-list {
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+.incident-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th,
+    td {
+        padding: 8px 8px 8px 0;
+        border-bottom: 1px solid var(--color-border);
+        text-align: left;
+        vertical-align: top;
+    }
+    thead th {
+        position: sticky;
+        top: 0;
+        background: var(--color-surface);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--color-muted);
+    }
+}
+
+.incident-table__when {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.incident-table__description {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.incident-table__reason {
+    display: block;
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--color-muted);
+}
+
+.incident-ongoing {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-text);
+}

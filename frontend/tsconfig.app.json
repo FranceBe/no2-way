@@ -16,6 +16,8 @@
         "moduleDetection": "force",
         "noEmit": true,
         "jsx": "react-jsx",
+        /* "@/shared/api" = src/shared/api (same alias in vite.config.ts) */
+        "paths": { "@/*": ["./src/*"] },
 
         /* Linting */
         "noUnusedLocals": true,

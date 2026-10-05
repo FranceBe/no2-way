@@ -11,14 +11,16 @@ const dirname = import.meta.dirname
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
     plugins: [react()],
+    // "@/shared/api" = src/shared/api (same alias in tsconfig.app.json)
+    resolve: { alias: { '@': path.join(dirname, 'src') } },
     test: {
         // Applies to `vitest run --project unit --coverage` (npm run coverage)
         coverage: {
             include: ['src/**/*.{ts,tsx}'],
             exclude: [
                 'src/**/*.{test,stories}.{ts,tsx}',
-                'src/mocks/**',
-                'src/test/**',
+                'src/shared/api/mocks/**',
+                'src/shared/test/**',
                 'src/main.tsx',
                 'src/env.d.ts',
             ],
@@ -39,7 +41,7 @@ export default defineConfig({
                     name: 'unit',
                     include: ['src/**/*.test.{ts,tsx}'],
                     environment: 'jsdom',
-                    setupFiles: ['src/test/setup.ts'],
+                    setupFiles: ['src/shared/test/setup.ts'],
                     // Fake API origin: requests to it are intercepted by MSW in tests
                     env: {
                         VITE_API_URL: 'http://api.test',

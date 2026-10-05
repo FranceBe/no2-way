@@ -1,0 +1,16 @@
+.aq-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-2);
+}
+
+.aq-badge__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    /* Pale levels (Good, Fair) stay visible on light surfaces */
+    box-shadow: inset 0 0 0 1px rgba(16, 25, 74, 0.25);
+}

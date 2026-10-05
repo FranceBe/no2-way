@@ -1,0 +1,11 @@
+.transport-page {
+    display: grid;
+    gap: 16px;
+}
+
+.transport-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: 16px;
+    align-items: start;
+}

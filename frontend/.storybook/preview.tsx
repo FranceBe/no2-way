@@ -3,8 +3,11 @@ import { useEffect } from 'react'
 // Same fonts and global styles (design tokens) as the app
 import '@fontsource-variable/inter'
 import '@fontsource-variable/space-grotesk'
-import '../src/index.css'
-import { applyThemePreference, type ThemePreference } from '../src/theme/theme'
+import '../src/shared/theme/global.css'
+import {
+    applyThemePreference,
+    type ThemePreference,
+} from '../src/shared/theme/theme'
 
 const preview: Preview = {
     // Toolbar switch to preview every story in light or dark
